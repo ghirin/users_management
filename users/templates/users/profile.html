@@ -1,0 +1,39 @@
+<!-- users/templates/users/profile.html -->
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="text-center mb-4">Профиль</h2>
+        <div class="card p-4">
+            <p><strong>Логин:</strong> {{ user.username }}</p>
+            <p>Email: {{ user.email }}</p>
+            <p><strong>Комментарий:</strong> {{ user.comment }}</p>
+            <p><strong>Дата истечения пароля:</strong> {{ user.password_expiration_date }}</p>
+
+            <h3 class="mt-4">Файлы пользователя</h3>
+            <ul class="list-group">
+                {% for file in files %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center"">
+                        <a href="{{ file.file.url }}">{{ file.file.name }}</a>
+                        <a href="{% url 'delete_file' file.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <form method="post" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input type="file" name="file" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Загрузка</button>
+            </form>
+
+            <div class="mt-4">
+                <a href="{% url 'edit_user' user.id %}" class="btn btn-warning w-100">Редактировать пользователя</a>
+                <a href="{% url 'delete_user' user.id %}" class="btn btn-danger w-100 mt-2">Удалить пользователя</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

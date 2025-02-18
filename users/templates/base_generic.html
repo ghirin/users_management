@@ -1,0 +1,47 @@
+<!-- users/templates/users/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление пользователями</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">Управление пользователями</a>  <!-- Используйте 'home' -->
+            <div class="navbar-nav">
+                {% if user.is_authenticated %}
+                <div style="margin-bottom: 10px; float: left;">
+                    <!-- Поле поиска -->
+                    <form method="GET" action="{% url 'user_list' %}">
+                        <button type="submit" class="btn btn-success">Искать</button>
+                        <input type="text" name="q" value="{{ query }}" placeholder="Поиск по пользователям" />
+                    </form>
+                </div>
+                    <a class="nav-link" href="{% url 'admin:login' %}">Администрирование</a>
+                    <a class="nav-link" href="{% url 'profile' %}">Профиль</a>
+                    <a class="nav-link" href="{% url 'password_change' %}">Изменение пароля</a>
+                    <a class="nav-link" href="{% url 'logout' %}">Выход</a>
+
+                {% else %}
+                    <a class="nav-link" href="{% url 'login' %}">Вход</a>
+                    <a class="nav-link" href="{% url 'register' %}">Регистрация</a>
+
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container mt-4">
+        {% block content %}
+        <!-- Содержимое страницы будет здесь -->
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

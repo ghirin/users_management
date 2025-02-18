@@ -1,0 +1,60 @@
+{% extends 'base_generic.html' %}
+<h1>Добро пожаловать в систему управления пользователями</h1>
+<p><a href="{% url 'login' %}">Вход</a></p>
+<p><a href="{% url 'register' %}">Регистрация</a></p>
+
+{% block content %}
+  <h2>Добро пожаловать, <a href="{% url 'profile' %}">{{ user.username }}</a></h2>
+
+  <h5>Список всех пользователей:</h5>
+      <!-- Кнопка для создания нового пользователя -->
+    <div class="mb-4">
+        <a href="{% url 'create_user' %}" class="btn btn-success">Создать нового пользователя</a>
+    </div>
+
+  <table style="border-collapse: collapse; border: 1px solid #ddd;">
+    <thead>
+      <tr>
+        <th style="border: 1px solid #ddd; padding: 8px;">
+          <a href="?sort_by=username&order={% if sort_by == 'username' and order == 'asc' %}desc{% else %}asc{% endif %}">Логин</a>
+      </th>
+      <th style="border: 1px solid #ddd; padding: 8px;">
+        <a href="?sort_by=comment&order={% if sort_by == 'comment' and order == 'asc' %}desc{% else %}asc{% endif %}">Пароль</a>
+    </th>
+    <th style="border: 1px solid #ddd; padding: 8px;">
+        <a href="?sort_by=password_expiration_date&order={% if sort_by == 'password_expiration_date' and order == 'asc' %}desc{% else %}asc{% endif %}">Дата истечения пароля</a>
+    </th>
+    <th style="border: 1px solid #ddd; padding: 8px;">Действия</th>
+</tr>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><a href="{% url 'edit_user' user.id %}">{{ user.username }}</a></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">{{ user.comment }}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">{{ user.password_expiration_date }}</td>
+            <td>
+              <a href="{% url 'profile' user.id %}" class="btn btn-warning btn-sm">Редактировать</a>
+              <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?');">Удалить</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+<script>
+    function sortTable(column) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSortBy = urlParams.get('sort_by');
+        const currentOrder = urlParams.get('order') || 'asc';
+        let newOrder = 'asc';
+        if (currentSortBy === column && currentOrder === 'asc') {
+            newOrder = 'desc';
+        }
+        urlParams.set('sort_by', column);
+        urlParams.set('order', newOrder);
+        window.location.search = urlParams.toString();
+    }
+</script>
+{% endblock %}
