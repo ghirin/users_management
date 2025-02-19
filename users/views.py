@@ -71,22 +71,6 @@ def user_login(request):
     return render(request, 'users/login.html', {'form': form})
 
 @login_required
-def profile(request, user_id):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    user = get_object_or_404(User, id=user_id)
-    files = UserFile.objects.filter(user=user)
-    context = {
-        'user': user,
-        'files': files,
-    }
-    if request.method == 'POST' and 'file' in request.FILES:
-        file = request.FILES['file']
-        UserFile.objects.create(user=user, file=file)
-    
-    return render(request, 'users/profile.html', {'user': user, 'files': files})
-
-@login_required
 def home(request):
         # Получаем всех пользователей
     users = CustomUser.objects.all()
@@ -122,10 +106,27 @@ def user_profile(request, user_id):
     return render(request, 'users/profile.html', {'user': user, 'files': files})
 
 @login_required
+def profile(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    user = get_object_or_404(User, id=user_id)
+    files = UserFile.objects.filter(user=user)
+    context = {
+        'user': user,
+        'files': files,
+    }
+    if request.method == 'POST' and 'file' in request.FILES:
+        file = request.FILES['file']
+        UserFile.objects.create(user=user, file=file)
+    
+    return render(request, 'users/profile.html', {'user': user, 'files': files})
+
+@login_required
 def delete_file(request, file_id):
-    file = get_object_or_404(UserFile, id=file_id, user=request.user)
+    file = get_object_or_404(UserFile, id=file_id)
+    user_id = file.user.id  # Get the user_id before deleting the file
     file.delete()
-    return redirect('profile')
+    return redirect('user_profile', user_id=user_id)
 
 @login_required
 def home(request):

@@ -15,17 +15,16 @@
   <table style="border-collapse: collapse; border: 1px solid #ddd;">
     <thead>
       <tr>
-        <th style="border: 1px solid #ddd; padding: 8px;">
-          <a href="?sort_by=username&order={% if sort_by == 'username' and order == 'asc' %}desc{% else %}asc{% endif %}">Логин</a>
+        <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+          <a href="?sort_by=username&order={% if sort_by == 'user' and order == 'asc' %}desc{% else %}asc{% endif %}">Логин</a>
       </th>
-      <th style="border: 1px solid #ddd; padding: 8px;">
+      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?sort_by=comment&order={% if sort_by == 'comment' and order == 'asc' %}desc{% else %}asc{% endif %}">Пароль</a>
     </th>
-    <th style="border: 1px solid #ddd; padding: 8px;">
+    <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?sort_by=password_expiration_date&order={% if sort_by == 'password_expiration_date' and order == 'asc' %}desc{% else %}asc{% endif %}">Дата истечения пароля</a>
     </th>
-    <th style="border: 1px solid #ddd; padding: 8px;">Действия</th>
-</tr>
+    <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Действия</th>
       </tr>
     </thead>
     <tbody>

@@ -1,0 +1,15 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Импорт пользователей из файла Excel</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="xlsx_file" class="form-label">Выберите файл Excel</label>
+            <input type="file" name="xlsx_file" class="form-control" id="xlsx_file" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Импортировать</button>
+    </form>
+</div>
+{% endblock %}
