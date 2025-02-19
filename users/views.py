@@ -1,10 +1,11 @@
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
-from .models import CustomUser, UserFile, User
+import pandas as pd
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from .models import CustomUser, UserFile, User
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
-from django.shortcuts import render, redirect, get_object_or_404
 
 @login_required
 def create_user(request):
@@ -142,3 +143,25 @@ def home(request):
         'order': order,
     }
     return render(request, 'home.html', context)
+
+@login_required
+def import_users(request):
+    if request.method == 'POST':
+        xlsx_file = request.FILES['xlsx_file']
+        try:
+            df = pd.read_excel(xlsx_file, engine='openpyxl')
+            for index, row in df.iterrows():
+                if not CustomUser.objects.filter(username=row['username']).exists():
+                    CustomUser.objects.create(
+                        username=row['username'],
+                        email=row['email'],
+                        comment=row['comment'],
+                        password_expiration_date=row['password_expiration_date']
+                    )
+                else:
+                    messages.warning(request, f'Пользователь с именем {row["username"]} уже существует.')
+            messages.success(request, 'Пользователи успешно импортированы.')
+        except Exception as e:
+            messages.error(request, f'Ошибка при импорте пользователей: {e}')
+        return redirect('import_users')
+    return render(request, 'users/import_users.html')

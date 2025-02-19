@@ -4,15 +4,16 @@
 <p><a href="{% url 'register' %}">Регистрация</a></p>
 
 {% block content %}
-  <h2>Добро пожаловать, <a href="{% url 'profile' %}">{{ user.username }}</a></h2>
+  <h2>Добро пожаловать, <a href="{% url 'profile' user.id %}">{{ user.username }}</a></h2>
 
   <h5>Список всех пользователей:</h5>
       <!-- Кнопка для создания нового пользователя -->
     <div class="mb-4">
         <a href="{% url 'create_user' %}" class="btn btn-success">Создать нового пользователя</a>
+        <a href="{% url 'import_users' %}" class="btn btn-primary">Импорт пользователей</a>
     </div>
 
-  <table style="border-collapse: collapse; border: 1px solid #ddd;">
+    <table style="border-collapse: collapse; border: 1px solid #ddd;">
     <thead>
       <tr>
         <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">

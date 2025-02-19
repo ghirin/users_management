@@ -7,7 +7,6 @@ from .views import user_list
 urlpatterns = [
     path('', views.home, name='home'),  # Главная страница
     path('register/', views.register, name='register'),
-    path('accounts/', include('django.contrib.auth.urls')),  # Подключаем стандартные маршруты аутентификации
     path('login/', views.user_login, name='login'),
     path('profile/<int:user_id>/', views.profile, name='profile'),
     path('profile/<int:user_id>/', views.user_profile, name='user_profile'),  # Add this line
@@ -19,5 +18,6 @@ urlpatterns = [
     path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
     path('users/', user_list, name='user_list'),
     path('delete_file/<int:file_id>/', views.delete_file, name='delete_file'),
-
+    path('import_users/', views.import_users, name='import_users'),
+    #path('export_users/', views.export_users, name='export_users'),
 ]
