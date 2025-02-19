@@ -29,7 +29,7 @@
                     </form>
                 </div>
                     <a class="nav-link" href="{% url 'admin:login' %}">Администрирование</a>
-                    <a class="nav-link" href="{% url 'profile' %}">Профиль</a>
+                    <a class="nav-link" href="{% url 'profile' user.id %}">Профиль</a>
                     <a class="nav-link" href="{% url 'password_change' %}">Изменение пароля</a>
                     <a class="nav-link" href="{% url 'logout' %}">Выход</a>
 
