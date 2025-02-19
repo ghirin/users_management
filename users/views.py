@@ -156,7 +156,7 @@ def import_users(request):
                         username=row['username'],
                         email=row['email'],
                         comment=row['comment'],
-                        password_expiration_date=row['password_expiration_date']
+                        password_expiration_date=str(row['password_expiration_date'])  # Convert to string
                     )
                 else:
                     messages.warning(request, f'Пользователь с именем {row["username"]} уже существует.')
