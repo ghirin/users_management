@@ -15,7 +15,7 @@ urlpatterns = [
          name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path('accounts/profile/', views.profile, name='profile'),
+    path('accounts/profile/', views.my_profile, name='profile'),
     path('accounts/', include('django.contrib.auth.urls')),  # Подключаем стандартные маршруты аутентификации
 ]
 

@@ -3,6 +3,19 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Импорт пользователей из файла Excel</h2>
+    <div class="alert alert-info" role="alert">
+        <strong>Формат файла для импорта:</strong><br>
+        Файл должен быть в формате <b>Excel (.xlsx)</b> и содержать следующие столбцы:<br>
+        <ul>
+            <li><b>username</b> — имя пользователя (обязательно, уникально)</li>
+            <li><b>email</b> — электронная почта</li>
+            <li><b>phone</b> — телефон (формат: (000)111-22-22)</li>
+            <li><b>plain_password</b> — пароль (открытый текст, может быть пустым)</li>
+            <li><b>comment</b> — комментарий (может быть пустым)</li>
+            <li><b>password_expiration_date</b> — дата истечения пароля (в формате ГГГГ-ММ-ДД)</li>
+        </ul>
+        <a href="{% url 'export_users' %}" class="btn btn-outline-success btn-sm mt-2">Экспортировать пользователей</a>
+    </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">

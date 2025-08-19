@@ -19,9 +19,12 @@
         <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
           <a href="?sort_by=username&order={% if sort_by == 'username' and order == 'asc' %}desc{% else %}asc{% endif %}">Логин</a>
       </th>
+      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Электронная почта</th>
+      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Телефон</th>
       <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
-        <a href="?sort_by=comment&order={% if sort_by == 'comment' and order == 'asc' %}desc{% else %}asc{% endif %}">Пароль</a>
-    </th>
+        <a href="?sort_by=comment&order={% if sort_by == 'comment' and order == 'asc' %}desc{% else %}asc{% endif %}">Комментарий</a>
+      </th>
+      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Пароль</th>
     <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?sort_by=password_expiration_date&order={% if sort_by == 'password_expiration_date' and order == 'asc' %}desc{% else %}asc{% endif %}">Дата истечения пароля</a>
     </th>
@@ -32,7 +35,10 @@
       {% for user in users %}
         <tr>
             <td style="border: 1px solid #ddd; padding: 8px;"><a href="{% url 'edit_user' user.id %}">{{ user.username }}</a></td>
+            <td style="border: 1px solid #ddd; padding: 8px;" class="{% if not user.email %}text-warning-empty{% endif %}">{{ user.email|default:'—' }}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">{{ user.phone }}</td>
             <td style="border: 1px solid #ddd; padding: 8px;">{{ user.comment }}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;" class="{% if not user.plain_password %}text-warning-empty{% endif %}">{{ user.plain_password|default:'—' }}</td>
             <td style="border: 1px solid #ddd; padding: 8px;">{{ user.password_expiration_date }}</td>
             <td>
               <a href="{% url 'profile' user.id %}" class="btn btn-warning btn-sm">Редактировать</a>
@@ -43,6 +49,12 @@
     </tbody>
   </table>
 
+<style>
+  .text-warning-empty {
+    color: #ffc107 !important;
+    font-weight: bold;
+  }
+</style>
 <script>
     function sortTable(column) {
         const urlParams = new URLSearchParams(window.location.search);

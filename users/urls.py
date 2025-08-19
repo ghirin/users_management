@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from .export import export_users
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
 from .views import user_list
@@ -19,5 +20,5 @@ urlpatterns = [
     path('users/', user_list, name='user_list'),
     path('delete_file/<int:file_id>/', views.delete_file, name='delete_file'),
     path('import_users/', views.import_users, name='import_users'),
-    #path('export_users/', views.export_users, name='export_users'),
+    path('export_users/', export_users, name='export_users'),
 ]

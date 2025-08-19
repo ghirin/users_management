@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Импорт пользователей</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="xlsx_file">Выберите файл Excel (.xlsx):</label>
+        <input type="file" name="xlsx_file" id="xlsx_file" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Импортировать</button>
+    <a href="../" class="btn btn-secondary mt-2">Назад</a>
+</form>
+{% endblock %}

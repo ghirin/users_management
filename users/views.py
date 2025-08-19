@@ -1,8 +1,19 @@
+def my_profile(request):
+    user = request.user
+    files = UserFile.objects.filter(user=user)
+    if request.method == 'POST' and 'file' in request.FILES:
+        file = request.FILES['file']
+        zip_bytes = encrypt_file_to_zip(file.read(), file.name)
+        from django.core.files.base import ContentFile
+        zip_filename = file.name + '.zip'
+        UserFile.objects.create(user=user, file=ContentFile(zip_bytes, name=zip_filename))
+    return render(request, 'users/profile.html', {'user': user, 'files': files})
 import pandas as pd
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import CustomUser, UserFile, User
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from .zip_utils import encrypt_file_to_zip
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserChangeForm
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
@@ -34,15 +45,20 @@ def delete_user(request, user_id):
 @login_required
 def edit_user(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
-    
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, request.FILES, instance=user)
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
-            form.save()
+            updated_user = form.save(commit=False)
+            # Обновить plain_password и пароль, если поле заполнено
+            plain_password = form.cleaned_data.get('plain_password')
+            if plain_password:
+                updated_user.plain_password = plain_password
+                updated_user.set_password(plain_password)
+            updated_user.save()
             messages.success(request, "Пользователь успешно обновлен.")
-            return redirect('profile')
+            return redirect('profile', user_id=user.pk)
     else:
-        form = CustomUserCreationForm(instance=user)
+        form = CustomUserChangeForm(instance=user)
     return render(request, 'users/edit_user.html', {'form': form, 'user': user})
 
 def register(request):
@@ -71,13 +87,13 @@ def user_login(request):
         form = CustomAuthenticationForm()
     return render(request, 'users/login.html', {'form': form})
 
-@login_required
-def home(request):
-        # Получаем всех пользователей
-    users = CustomUser.objects.all()
+# @login_required
+# def home(request):
+#         # Получаем всех пользователей
+#     users = CustomUser.objects.all()
     
-    # Передаем список пользователей в шаблон
-    return render(request, 'home.html', {'users': users})
+#     # Передаем список пользователей в шаблон
+#     return render(request, 'home.html', {'users': users})
 
 @login_required
 def logout_view(request):
@@ -101,8 +117,12 @@ def user_profile(request, user_id):
     
     if request.method == 'POST' and 'file' in request.FILES:
         file = request.FILES['file']
-        UserFile.objects.create(user=user, file=file)
-        return redirect('user_profile', user_id=user.id)
+        # Архивируем и шифруем файл
+        zip_bytes = encrypt_file_to_zip(file.read(), file.name)
+        from django.core.files.base import ContentFile
+        zip_filename = file.name + '.zip'
+        UserFile.objects.create(user=user, file=ContentFile(zip_bytes, name=zip_filename))
+    return redirect('user_profile', user_id=user.pk)
     
     return render(request, 'users/profile.html', {'user': user, 'files': files})
 
@@ -118,14 +138,17 @@ def profile(request, user_id):
     }
     if request.method == 'POST' and 'file' in request.FILES:
         file = request.FILES['file']
-        UserFile.objects.create(user=user, file=file)
+        zip_bytes = encrypt_file_to_zip(file.read(), file.name)
+        from django.core.files.base import ContentFile
+        zip_filename = file.name + '.zip'
+        UserFile.objects.create(user=user, file=ContentFile(zip_bytes, name=zip_filename))
     
     return render(request, 'users/profile.html', {'user': user, 'files': files})
 
 @login_required
 def delete_file(request, file_id):
     file = get_object_or_404(UserFile, id=file_id)
-    user_id = file.user.id  # Get the user_id before deleting the file
+    user_id = file.user.pk  # Get the user_id before deleting the file
     file.delete()
     return redirect('user_profile', user_id=user_id)
 
@@ -152,11 +175,27 @@ def import_users(request):
             df = pd.read_excel(xlsx_file, engine='openpyxl')
             for index, row in df.iterrows():
                 if not CustomUser.objects.filter(username=row['username']).exists():
+                    date_val = row['password_expiration_date']
+                    if hasattr(date_val, 'strftime'):
+                        date_str = date_val.strftime('%Y-%m-%d')
+                    else:
+                        date_str = str(date_val).split()[0]
+                    # plain_password: всегда строка, без .0 если это float
+                    raw_pass = row.get('plain_password', '')
+                    if isinstance(raw_pass, float):
+                        if raw_pass.is_integer():
+                            raw_pass = str(int(raw_pass))
+                        else:
+                            raw_pass = str(raw_pass)
+                    else:
+                        raw_pass = str(raw_pass)
                     CustomUser.objects.create(
                         username=row['username'],
-                        email=row['email'],
-                        comment=row['comment'],
-                        password_expiration_date=str(row['password_expiration_date'])  # Convert to string
+                        email=row.get('email', ''),
+                        phone=row.get('phone', ''),
+                        plain_password=raw_pass,
+                        comment=row.get('comment', ''),
+                        password_expiration_date=date_str
                     )
                 else:
                     messages.warning(request, f'Пользователь с именем {row["username"]} уже существует.')
