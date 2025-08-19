@@ -189,10 +189,17 @@ def import_users(request):
                             raw_pass = str(raw_pass)
                     else:
                         raw_pass = str(raw_pass)
+                    # Преобразовать телефон к формату (098)518-43-22
+                    raw_phone = str(row.get('phone', '')).strip()
+                    phone = raw_phone
+                    if raw_phone.isdigit() and len(raw_phone) == 9:
+                        phone = f"(0{raw_phone[:2]}){raw_phone[2:5]}-{raw_phone[5:7]}-{raw_phone[7:]}"
+                    elif raw_phone.isdigit() and len(raw_phone) == 10:
+                        phone = f"({raw_phone[:3]}){raw_phone[3:6]}-{raw_phone[6:8]}-{raw_phone[8:]}"
                     CustomUser.objects.create(
                         username=row['username'],
                         email=row.get('email', ''),
-                        phone=row.get('phone', ''),
+                        phone=phone,
                         plain_password=raw_pass,
                         comment=row.get('comment', ''),
                         password_expiration_date=date_str
