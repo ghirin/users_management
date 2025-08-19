@@ -1,9 +1,11 @@
 from django.urls import path, include
+
 from . import views
 from .export import export_users
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
 from .views import user_list
+from .views_massmail import mass_mail
 
 urlpatterns = [
     path('', views.home, name='home'),  # Главная страница
@@ -21,4 +23,5 @@ urlpatterns = [
     path('delete_file/<int:file_id>/', views.delete_file, name='delete_file'),
     path('import_users/', views.import_users, name='import_users'),
     path('export_users/', export_users, name='export_users'),
+    path('mass_mail/', mass_mail, name='mass_mail'),
 ]

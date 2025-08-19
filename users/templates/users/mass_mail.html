@@ -1,0 +1,32 @@
+{% extends "base_generic.html" %}
+{% block content %}
+  <h2>Рассылка по email</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.subject.label_tag }}<br>{{ form.subject }}<br><br>
+    {{ form.message.label_tag }}<br>{{ form.message }}<br><br>
+    <div>
+      <label><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
+    </div>
+    <div id="recipients-list">
+      {% for checkbox in form.recipients %}
+        <div>{{ checkbox.tag }} {{ checkbox.choice_label }}</div>
+      {% endfor %}
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Отправить</button>
+  </form>
+  <script>
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('#recipients-list input[type="checkbox"]');
+    selectAll.addEventListener('change', function() {
+      checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    });
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', function() {
+        if (!cb.checked) selectAll.checked = false;
+        else if ([...checkboxes].every(c => c.checked)) selectAll.checked = true;
+      });
+    });
+  </script>
+{% endblock %}
