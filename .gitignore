@@ -1,0 +1,25 @@
+# Virtual environment
+venv/
+env/
+
+# Byte-code files
+*.pyc
+__pycache__/
+
+# IDE/Editor files
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+dist/
+*.egg
+*.whl
+
+# Logs and temporary files
+*.log
+*.tmp
+#Secret files
+*.env
+# Database files
+db.sqlite3
