@@ -219,7 +219,8 @@ def import_users(request):
                         phone=phone,
                         plain_password=raw_pass,
                         comment=row.get('comment', ''),
-                        password_expiration_date=date_str
+                        password_expiration_date=date_str,
+                        preferred_messenger=row.get('preferred_messenger', ''),
                     )
                 else:
                     messages.warning(request, f'Пользователь с именем {row["username"]} уже существует.')

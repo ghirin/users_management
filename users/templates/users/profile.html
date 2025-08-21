@@ -10,6 +10,7 @@
             <p>Email: {{ user.email }}</p>
             <p><strong>Телефон:</strong> {{ user.phone }}</p>
             <p><strong>Комментарий:</strong> {{ user.comment }}</p>
+            <p><strong>Предпочитаемый мессенджер:</strong> {{ user.preferred_messenger|default:'—' }}</p>
             <p><strong>Дата истечения пароля:</strong> {{ user.password_expiration_date }}</p>
 
             <h3 class="mt-4">Файлы пользователя</h3>

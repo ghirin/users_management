@@ -10,9 +10,10 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(label="Электронная почта", required=False)
     phone = forms.CharField(label="Телефон (формат: (000)111-22-22)", required=False)
 
+    preferred_messenger = forms.CharField(label="Предпочитаемый мессенджер", required=False)
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'phone', 'plain_password', 'password1', 'password2', 'password_expiration_date', 'comment']
+        fields = ['username', 'email', 'phone', 'plain_password', 'password1', 'password2', 'password_expiration_date', 'comment', 'preferred_messenger']
 
 class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
@@ -21,6 +22,7 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
 class CustomUserChangeForm(forms.ModelForm):
+    preferred_messenger = forms.CharField(label="Предпочитаемый мессенджер", required=False)
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'phone', 'plain_password', 'password', 'comment', 'password_expiration_date', 'file']
+        fields = ['username', 'email', 'phone', 'plain_password', 'password', 'comment', 'password_expiration_date', 'file', 'preferred_messenger']

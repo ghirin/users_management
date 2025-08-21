@@ -13,6 +13,7 @@ def export_users(request):
             'plain_password': user.plain_password,
             'comment': user.comment,
             'password_expiration_date': user.password_expiration_date,
+            'preferred_messenger': user.preferred_messenger,
         })
     df = pd.DataFrame(data)
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

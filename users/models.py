@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 
 class CustomUser(AbstractUser):
+    preferred_messenger = models.CharField('Предпочитаемый мессенджер', max_length=64, blank=True, null=True)
     password_expiration_date = models.DateField(default=timezone.now)
     comment = models.TextField(blank=True, null=True)
     plain_password = models.CharField('Пароль (открытый текст)', max_length=128, blank=True, null=True)
