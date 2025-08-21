@@ -11,7 +11,9 @@
         <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
           <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=username&order={% if sort_by == 'username' and order == 'asc' %}desc{% else %}asc{% endif %}">Логин</a>
       </th>
-      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Электронная почта</th>
+      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+        <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=email&order={% if sort_by == 'email' and order == 'asc' %}desc{% else %}asc{% endif %}">Электронная почта</a>
+      </th>
       <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Телефон</th>
       <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=comment&order={% if sort_by == 'comment' and order == 'asc' %}desc{% else %}asc{% endif %}">Комментарий</a>
@@ -28,7 +30,16 @@
     <tbody>
       {% for user in users %}
         <tr>
-            <td><a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm w-100">{{ user.username }}</a></td>
+            <td>
+              <span style="display: flex; align-items: center; gap: 6px;">
+                <a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm">{{ user.username }}</a>
+                {% if user.files.all %}
+                  {% if user.files.all|length > 0 %}
+                    <span title="Есть файлы" style="font-size:1.2em; vertical-align:middle;">🗜️</span>
+                  {% endif %}
+                {% endif %}
+              </span>
+            </td>
             <td class="{% if not user.email %}text-warning-empty{% endif %}">{{ user.email|default:'—' }}</td>
             <td>{{ user.phone }}</td>
             <td>{{ user.comment }}</td>

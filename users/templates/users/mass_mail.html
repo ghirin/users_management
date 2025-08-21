@@ -1,42 +1,65 @@
 {% extends "base_generic.html" %}
+{% load widget_tweaks %}
+
 {% block content %}
-  <h2>Рассылка по email</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.subject.label_tag }}<br>{{ form.subject }}<br><br>
-    {{ form.message.label_tag }}<br>
-    <textarea name="message" id="id_message" class="form-control" style="width:100%; min-width:100%; max-width:100%; min-height:200px;" required>{{ form.message.value|default_if_none:'' }}</textarea><br><br>
-    <div>
-      <label><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">Рассылка по email</h4>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="id_subject" class="form-label">{{ form.subject.label }}</label>
+              {{ form.subject|add_class:"form-control" }}
+            </div>
+            <div class="mb-3">
+              <label for="id_message" class="form-label">{{ form.message.label }}</label>
+              {{ form.message|add_class:"form-control" }}
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
+            </div>
+            <div id="recipients-list" class="mb-3">
+              {% for checkbox in form.recipients %}
+                <div class="form-check">
+                  {{ checkbox.tag }}
+                  <label class="form-check-label">{{ checkbox.choice_label }}</label>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="d-grid mt-3">
+              <button type="submit" class="btn btn-primary btn-lg">Отправить</button>
+            </div>
+            <script>
+              // Автоматически выделять чекбокс пользователя, если user_id передан
+              const url = new URL(window.location.href);
+              const userId = url.searchParams.get('user_id');
+              if (userId) {
+                const cb = document.querySelector(`#recipients-list input[type='checkbox'][value='${userId}']`);
+                if (cb) cb.checked = true;
+              }
+            </script>
+          </form>
+        </div>
+      </div>
     </div>
-    <div id="recipients-list">
-      {% for checkbox in form.recipients %}
-        <div>{{ checkbox.tag }} {{ checkbox.choice_label }}</div>
-      {% endfor %}
-    </div>
-    <br>
-    <button type="submit" class="btn btn-primary">Отправить</button>
-    <script>
-      // Автоматически выделять чекбокс пользователя, если user_id передан
-      const url = new URL(window.location.href);
-      const userId = url.searchParams.get('user_id');
-      if (userId) {
-        const cb = document.querySelector(`#recipients-list input[type='checkbox'][value='${userId}']`);
-        if (cb) cb.checked = true;
-      }
-    </script>
-  </form>
-  <script>
-    const selectAll = document.getElementById('select-all');
-    const checkboxes = document.querySelectorAll('#recipients-list input[type="checkbox"]');
-    selectAll.addEventListener('change', function() {
-      checkboxes.forEach(cb => cb.checked = selectAll.checked);
+  </div>
+</div>
+<script>
+  const selectAll = document.getElementById('select-all');
+  const checkboxes = document.querySelectorAll('#recipients-list input[type="checkbox"]');
+  selectAll.addEventListener('change', function() {
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+  });
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', function() {
+      if (!cb.checked) selectAll.checked = false;
+      else if ([...checkboxes].every(c => c.checked)) selectAll.checked = true;
     });
-    checkboxes.forEach(cb => {
-      cb.addEventListener('change', function() {
-        if (!cb.checked) selectAll.checked = false;
-        else if ([...checkboxes].every(c => c.checked)) selectAll.checked = true;
-      });
-    });
-  </script>
+  });
+</script>
 {% endblock %}

@@ -43,9 +43,9 @@
 	{% if users %}
 	<div class="grid">
 		{% for user in users %}
-		<div class="card">
+		<a href="{% url 'user_profile' user.id %}" class="card" style="text-decoration: none; color: inherit; position: relative;">
 			<div style="display: flex; align-items: center; gap: 8px;">
-				<input type="checkbox" name="recipients" value="{{ user.id }}" class="user-checkbox">
+				<input type="checkbox" name="recipients" value="{{ user.id }}" class="user-checkbox" onclick="event.stopPropagation();">
 				<div class="username">{{ user.username }}</div>
 			</div>
 			<div class="email{% if not user.email %} yellow-text{% endif %}">{{ user.email|default:'(нет email)' }}</div>
@@ -56,12 +56,12 @@
 					(нет пароля)
 				{% endif %}
 			</div>
-			<div class="actions">
-				<a href="{% url 'edit_user' user.id %}" class="btn" style="background: #4CAF50; color: white; text-decoration: none; border-radius: 6px; padding: 8px;">✏️</a>
-				<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn" style="background: #FFD600; color: #333; text-decoration: none; border-radius: 6px; padding: 8px;">📧</a>
-				<a href="{% url 'delete_user' user.id %}" class="btn" style="background: #e53935; color: white; text-decoration: none; border-radius: 6px; padding: 8px;" onclick="return confirm('Удалить пользователя {{ user.username }}?');">🗑️</a>
+			<div class="actions" style="pointer-events: auto; gap: 8px; font-size: 1em;">
+				<a href="{% url 'edit_user' user.id %}" style="color: #198754; text-decoration: underline; margin-right: 8px;" onclick="event.stopPropagation();">✏️ Редактировать</a>
+				<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" style="color: #ffc107; text-decoration: underline; margin-right: 8px;" onclick="event.stopPropagation();">📧 Почта</a>
+				<a href="{% url 'delete_user' user.id %}" style="color: #dc3545; text-decoration: underline;" onclick="event.stopPropagation(); return confirm('Удалить пользователя {{ user.username }}?');">🗑️ Удалить</a>
 			</div>
-		</div>
+		</a>
 		{% endfor %}
 	</div>
 	{% else %}

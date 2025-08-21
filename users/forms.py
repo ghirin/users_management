@@ -10,7 +10,16 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(label="Электронная почта", required=False)
     phone = forms.CharField(label="Телефон (формат: (000)111-22-22)", required=False)
 
-    preferred_messenger = forms.CharField(label="Предпочитаемый мессенджер", required=False)
+    MESSENGER_CHOICES = [
+        ('', '—'),
+        ('Telegram', 'Telegram'),
+        ('WhatsApp', 'WhatsApp'),
+        ('Viber', 'Viber'),
+        ('Signal', 'Signal'),
+        ('VK', 'VK'),
+        ('Другое', 'Другое'),
+    ]
+    preferred_messenger = forms.ChoiceField(label="Предпочитаемый мессенджер", choices=MESSENGER_CHOICES, required=False)
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'phone', 'plain_password', 'password1', 'password2', 'password_expiration_date', 'comment', 'preferred_messenger']
@@ -22,7 +31,16 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
 class CustomUserChangeForm(forms.ModelForm):
-    preferred_messenger = forms.CharField(label="Предпочитаемый мессенджер", required=False)
+    MESSENGER_CHOICES = [
+        ('', '—'),
+        ('Telegram', 'Telegram'),
+        ('WhatsApp', 'WhatsApp'),
+        ('Viber', 'Viber'),
+        ('Signal', 'Signal'),
+        ('VK', 'VK'),
+        ('Другое', 'Другое'),
+    ]
+    preferred_messenger = forms.ChoiceField(label="Предпочитаемый мессенджер", choices=MESSENGER_CHOICES, required=False)
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'phone', 'plain_password', 'password', 'comment', 'password_expiration_date', 'file', 'preferred_messenger']

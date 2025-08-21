@@ -111,7 +111,7 @@ def user_list(request):
 
     sort_by = request.GET.get('sort_by', 'username')
     order = request.GET.get('order', 'asc')
-    allowed_sort_fields = ['username', 'comment', 'plain_password', 'password_expiration_date']
+    allowed_sort_fields = ['username', 'email', 'comment', 'plain_password', 'password_expiration_date']
     if sort_by not in allowed_sort_fields:
         sort_by = 'username'
     if order == 'desc':
