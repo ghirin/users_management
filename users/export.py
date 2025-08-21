@@ -14,6 +14,7 @@ def export_users(request):
             'comment': user.comment,
             'password_expiration_date': user.password_expiration_date,
             'preferred_messenger': user.preferred_messenger,
+            'locality': user.locality.name if user.locality else '',
         })
     df = pd.DataFrame(data)
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

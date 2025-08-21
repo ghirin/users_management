@@ -100,30 +100,42 @@ def logout_view(request):
     logout(request)
     return redirect('login')  # Redirect to login page after logout
 
+from .models import Locality
 def user_list(request):
-    query = request.GET.get('q', '')  # Получаем строку поиска из параметров GET-запроса
+    query = request.GET.get('q', '')
     view_type = request.GET.get('view', 'tiles')
-    User = get_user_model()  # Используем get_user_model() для получения текущей модели пользователя
+    User = get_user_model()
     users = User.objects.all()
-
+    if request.method == 'POST' and request.POST.get('locality_id'):
+        locality_id = request.POST.get('locality_id')
+        user_ids = request.POST.getlist('recipients')
+        if locality_id and user_ids:
+            CustomUser.objects.filter(id__in=user_ids).update(locality_id=locality_id)
     if query:
-        users = users.filter(username__icontains=query)  # Фильтрация по имени пользователя, нечувствительному к регистру
-
+        from django.db.models import Q
+        users = users.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(phone__icontains=query) |
+            Q(comment__icontains=query)
+        )
     sort_by = request.GET.get('sort_by', 'username')
     order = request.GET.get('order', 'asc')
-    allowed_sort_fields = ['username', 'email', 'comment', 'plain_password', 'password_expiration_date']
+    allowed_sort_fields = ['username', 'email', 'comment', 'plain_password', 'password_expiration_date', 'locality__name']
     if sort_by not in allowed_sort_fields:
         sort_by = 'username'
     if order == 'desc':
         users = users.order_by(f'-{sort_by}')
     else:
         users = users.order_by(sort_by)
+    localities = Locality.objects.all().order_by('name')
     context = {
         'users': users,
         'query': query,
         'view_type': view_type,
         'sort_by': sort_by,
         'order': order,
+        'localities': localities,
     }
     return render(request, 'users/user_list.html', context)
 

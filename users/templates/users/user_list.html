@@ -35,20 +35,41 @@
 	@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
 </style>
 <!-- Список пользователей с чекбоксами (плитки) -->
-<form id="user-list-form" method="post" action="{% url 'mass_mail' %}">
+<form id="user-list-form" method="post" action="">
 	{% csrf_token %}
-	<div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-		<label><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+		<label style="color: #fff;"><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
+		<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 0;">
+			<select name="locality_id" class="form-select form-select-sm" style="width: 180px;">
+				<option value="">— Переместить в населённый пункт —</option>
+				{% for loc in localities %}
+					<option value="{{ loc.id }}">{{ loc.name }}</option>
+				{% endfor %}
+			</select>
+			<button type="submit" class="btn btn-success btn-sm">Переместить</button>
+		</div>
 	</div>
+	{% if request.GET.locality_id %}
+	<div class="mb-3">
+	<a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}{% endif %}" class="btn btn-outline-primary btn-sm mb-2" style="background:#fff; color:#111; font-weight:bold; border-color:#fff;">Показать всех</a>
+	</div>
+	{% endif %}
 	{% if users %}
 	<div class="grid">
 		{% for user in users %}
-		<a href="{% url 'user_profile' user.id %}" class="card" style="text-decoration: none; color: inherit; position: relative;">
+		<div class="card" style="text-decoration: none; color: inherit; position: relative;">
 			<div style="display: flex; align-items: center; gap: 8px;">
 				<input type="checkbox" name="recipients" value="{{ user.id }}" class="user-checkbox" onclick="event.stopPropagation();">
 				<div class="username">{{ user.username }}</div>
 			</div>
 			<div class="email{% if not user.email %} yellow-text{% endif %}">{{ user.email|default:'(нет email)' }}</div>
+			<div class="email" style="color:#1976d2; font-size:0.95em;">
+				{% if user.locality %}
+					🏙️ <a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}locality_id={{ user.locality.id }}" style="color:#1976d2; text-decoration:underline;">{{ user.locality.name }}</a>
+				{% else %}
+					—
+				{% endif %}
+			</div>
 			<div class="email{% if not user.plain_password %} yellow-text{% endif %}">
 				{% if user.plain_password %}
 					{{ user.plain_password }}
@@ -56,12 +77,12 @@
 					(нет пароля)
 				{% endif %}
 			</div>
-			<div class="actions" style="pointer-events: auto; gap: 8px; font-size: 1em;">
-				<a href="{% url 'edit_user' user.id %}" style="color: #198754; text-decoration: underline; margin-right: 8px;" onclick="event.stopPropagation();">✏️ Редактировать</a>
-				<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" style="color: #ffc107; text-decoration: underline; margin-right: 8px;" onclick="event.stopPropagation();">📧 Почта</a>
-				<a href="{% url 'delete_user' user.id %}" style="color: #dc3545; text-decoration: underline;" onclick="event.stopPropagation(); return confirm('Удалить пользователя {{ user.username }}?');">🗑️ Удалить</a>
+			<div class="actions d-flex justify-content-center align-items-center" style="gap:4px; font-size:0.95em; flex-wrap: wrap; margin-top: 6px;">
+				<a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm px-2 py-1" title="Редактировать" onclick="event.stopPropagation();" style="min-width:32px;">✏️</a>
+				<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-outline-warning btn-sm px-2 py-1" title="Почта" onclick="event.stopPropagation();" style="min-width:32px;">📧</a>
+				<a href="{% url 'delete_user' user.id %}" class="btn btn-outline-danger btn-sm px-2 py-1" title="Удалить" onclick="event.stopPropagation(); return confirm('Удалить пользователя {{ user.username }}?');" style="min-width:32px;">🗑️</a>
 			</div>
-		</a>
+		</div>
 		{% endfor %}
 	</div>
 	{% else %}

@@ -1,12 +1,18 @@
 {% extends 'base_generic.html' %}
+{% load static %}
 {% block content %}
-<div class="container-fluid mt-4">
-  <h2 class="text-center mb-4">Список пользователей</h2>
-  <div class="mb-3 text-end">
-    <a href="{% url 'mass_mail' %}" class="btn btn-warning">Отправить всем</a>
+<div class="container-fluid mt-4" style="min-height: 80vh; position: relative;">
+  <div style="position: absolute; inset: 0; z-index: 0; background: url('{% static 'Background.jpg' %}') center center/cover no-repeat; opacity: 0.25; border-radius: 18px;"></div>
+  <div style="position: relative; z-index: 1;">
+    <h2 class="text-center mb-4" style="color: #fff;">Список пользователей</h2>
+    <div class="mb-3 text-end">
+      <a href="{% url 'mass_mail' %}" class="btn btn-warning">Отправить всем</a>
+    </div>
+    <div class="card p-4" style="border-radius: 12px; background: rgba(255,255,255,0.95);">
+      {% include 'users/_user_table.html' %}
+    </div>
   </div>
-  <div class="card p-4" style="border-radius: 12px;">
-    {% include 'users/_user_table.html' %}
+</div>
 <style>
   .text-warning-empty {
     color: #ffc107 !important;
