@@ -10,7 +10,9 @@
       <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=comment&order={% if sort_by == 'comment' and order == 'asc' %}desc{% else %}asc{% endif %}">Комментарий</a>
       </th>
-      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Пароль</th>
+      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+        <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=plain_password&order={% if sort_by == 'plain_password' and order == 'asc' %}desc{% else %}asc{% endif %}">Пароль</a>
+      </th>
   <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
     <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=password_expiration_date&order={% if sort_by == 'password_expiration_date' and order == 'asc' %}desc{% else %}asc{% endif %}">Дата истечения пароля</a>
     </th>
@@ -27,9 +29,10 @@
             <td class="{% if not user.plain_password %}text-warning-empty{% endif %}">{{ user.plain_password|default:'—' }}</td>
             <td>{{ user.password_expiration_date }}</td>
             <td class="d-flex gap-1">
-              <a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-warning btn-sm">Отправить почту</a>
-              <a href="{% url 'user_profile' user.id %}" class="btn btn-success btn-sm">Файлы</a>
-              <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?');">Удалить</a>
+              <a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm" title="Редактировать"><span style="font-size:1.2em;">✏️</span></a>
+              <a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-outline-warning btn-sm" title="Отправить почту"><span style="font-size:1.2em;">📧</span></a>
+              <a href="{% url 'user_profile' user.id %}" class="btn btn-outline-primary btn-sm" title="Файлы"><span style="font-size:1.2em;">📁</span></a>
+              <a href="{% url 'delete_user' user.id %}" class="btn btn-outline-danger btn-sm" title="Удалить" onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?');"><span style="font-size:1.2em;">🗑️</span></a>
             </td>
         </tr>
       {% endfor %}

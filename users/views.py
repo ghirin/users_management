@@ -109,11 +109,21 @@ def user_list(request):
     if query:
         users = users.filter(username__icontains=query)  # Фильтрация по имени пользователя, нечувствительному к регистру
 
-    users = users.order_by('username')
+    sort_by = request.GET.get('sort_by', 'username')
+    order = request.GET.get('order', 'asc')
+    allowed_sort_fields = ['username', 'comment', 'plain_password', 'password_expiration_date']
+    if sort_by not in allowed_sort_fields:
+        sort_by = 'username'
+    if order == 'desc':
+        users = users.order_by(f'-{sort_by}')
+    else:
+        users = users.order_by(sort_by)
     context = {
         'users': users,
         'query': query,
         'view_type': view_type,
+        'sort_by': sort_by,
+        'order': order,
     }
     return render(request, 'users/user_list.html', context)
 
