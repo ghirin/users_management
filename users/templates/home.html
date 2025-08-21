@@ -1,20 +1,13 @@
 {% extends 'base_generic.html' %}
-<h1>Добро пожаловать в систему управления пользователями</h1>
-<p><a href="{% url 'login' %}">Вход</a></p>
-<p><a href="{% url 'register' %}">Регистрация</a></p>
-
 {% block content %}
-  <h2>Добро пожаловать, <a href="{% url 'profile' user.id %}">{{ user.username }}</a></h2>
-
-  <h5>Список всех пользователей:</h5>
-      <!-- Кнопка для создания нового пользователя -->
-    <div class="mb-4">
-        <a href="{% url 'create_user' %}" class="btn btn-success">Создать нового пользователя</a>
-        <a href="{% url 'import_users' %}" class="btn btn-primary">Импорт пользователей</a>
-  <a href="{% url 'mass_mail' %}" class="btn btn-warning">Рассылка по email</a>
-    </div>
-
-    <table style="border-collapse: collapse; border: 1px solid #ddd;">
+<div class="container-fluid mt-4">
+  <h2 class="text-center mb-4">Список пользователей</h2>
+  <div class="mb-3 text-end">
+    <a href="{% url 'mass_mail' %}" class="btn btn-warning">Отправить всем</a>
+  </div>
+  <div class="card p-4" style="border-radius: 12px;">
+    <div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle w-100">
     <thead>
       <tr>
         <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
@@ -35,16 +28,17 @@
     <tbody>
       {% for user in users %}
         <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;"><a href="{% url 'edit_user' user.id %}">{{ user.username }}</a></td>
-            <td style="border: 1px solid #ddd; padding: 8px;" class="{% if not user.email %}text-warning-empty{% endif %}">{{ user.email|default:'—' }}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">{{ user.phone }}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">{{ user.comment }}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;" class="{% if not user.plain_password %}text-warning-empty{% endif %}">{{ user.plain_password|default:'—' }}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">{{ user.password_expiration_date }}</td>
-            <td>
-              <a href="{% url 'profile' user.id %}" class="btn btn-warning btn-sm">Редактировать</a>
+            <td><a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm w-100">{{ user.username }}</a></td>
+            <td class="{% if not user.email %}text-warning-empty{% endif %}">{{ user.email|default:'—' }}</td>
+            <td>{{ user.phone }}</td>
+            <td>{{ user.comment }}</td>
+            <td class="{% if not user.plain_password %}text-warning-empty{% endif %}">{{ user.plain_password|default:'—' }}</td>
+            <td>{{ user.password_expiration_date }}</td>
+            <td class="d-flex gap-1">
+              <a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-warning btn-sm">Отправить почту</a>
+              <a href="{% url 'user_profile' user.id %}" class="btn btn-success btn-sm">Файлы</a>
               <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?');">Удалить</a>
-          </td>
+            </td>
         </tr>
       {% endfor %}
     </tbody>

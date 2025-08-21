@@ -1,0 +1,38 @@
+body, .module, .dashboard-module, .object-tools, .breadcrumbs, .form-row, .form-group, .submit-row, .selector-chosen {
+    background-color: #e8f5e9 !important;
+}
+.module caption, .module h2, .dashboard-module h2, .breadcrumbs, .object-tools, .form-row label, .form-group label, .selector-chosen label {
+    color: #1b5e20 !important;
+}
+.object-tools .addlink, .object-tools .changelink, .object-tools .deletelink, .object-tools .viewlink, .object-tools .historylink {
+    background: #43a047 !important;
+    color: #fff !important;
+    border-radius: 6px;
+    padding: 6px 14px;
+    margin-right: 8px;
+}
+.object-tools .addlink:hover, .object-tools .changelink:hover, .object-tools .deletelink:hover, .object-tools .viewlink:hover, .object-tools .historylink:hover {
+    background: #388e3c !important;
+}
+.button, input[type="submit"], input[type="button"], button {
+    background: #43a047 !important;
+    color: #fff !important;
+    border-radius: 6px;
+    border: none;
+}
+.button:hover, input[type="submit"]:hover, input[type="button"]:hover, button:hover {
+    background: #388e3c !important;
+}
+.module th, .module td {
+    border-color: #a5d6a7 !important;
+}
+.module th {
+    background: #a5d6a7 !important;
+    color: #1b5e20 !important;
+}
+.module td {
+    background: #fff !important;
+}
+.selector-chosen .selector-available, .selector-chosen .selector-chosen {
+    background: #c8e6c9 !important;
+}

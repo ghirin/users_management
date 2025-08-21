@@ -17,6 +17,7 @@ urlpatterns = [
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('accounts/profile/', views.my_profile, name='profile'),
     path('accounts/', include('django.contrib.auth.urls')),  # Подключаем стандартные маршруты аутентификации
+    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

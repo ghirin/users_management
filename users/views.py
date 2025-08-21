@@ -102,13 +102,20 @@ def logout_view(request):
 
 def user_list(request):
     query = request.GET.get('q', '')  # Получаем строку поиска из параметров GET-запроса
+    view_type = request.GET.get('view', 'tiles')
     User = get_user_model()  # Используем get_user_model() для получения текущей модели пользователя
     users = User.objects.all()
 
     if query:
         users = users.filter(username__icontains=query)  # Фильтрация по имени пользователя, нечувствительному к регистру
 
-    return render(request, 'home.html', {'users': users, 'query': query})
+    users = users.order_by('username')
+    context = {
+        'users': users,
+        'query': query,
+        'view_type': view_type,
+    }
+    return render(request, 'users/user_list.html', context)
 
 @login_required
 def user_profile(request, user_id):

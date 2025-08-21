@@ -28,6 +28,10 @@ def mass_mail(request):
                 messages.success(request, f'Письма отправлены {len(emails)} пользователям.')
             return redirect('home')
     else:
-        form = MassMailForm()
+        user_id = request.GET.get('user_id')
+        if user_id:
+            form = MassMailForm(initial={'recipients': [user_id]})
+        else:
+            form = MassMailForm()
     users = CustomUser.objects.exclude(email='')
     return render(request, 'users/mass_mail.html', {'form': form, 'users': users})

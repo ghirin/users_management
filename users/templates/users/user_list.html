@@ -1,0 +1,79 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+{% load static %}
+{% if request.GET.view == 'table' %}
+	{% include 'home.html' %}
+{% else %}
+<style>
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 20px;
+	}
+	.card {
+		background-color: #A5D6A7;
+		border-radius: 10px;
+		padding: 20px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+		transition: transform 0.2s ease;
+	}
+	.card:hover { transform: scale(1.02); }
+	.username { font-size: 1.2em; font-weight: bold; color: #1B5E20; }
+	.email { font-size: 0.95em; color: #2E7D32; margin-bottom: 10px; }
+	.yellow-text { color: #FFD600 !important; font-weight: bold; }
+	.actions { display: flex; gap: 10px; margin-top: 10px; }
+	.actions a { flex: 1; background-color: #4CAF50; color: white; border: none; padding: 8px; border-radius: 6px; text-decoration: none; transition: background-color 0.2s ease; }
+	.actions a:hover { background-color: #388E3C; }
+	@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>
+<!-- Список пользователей с чекбоксами (плитки) -->
+<form id="user-list-form" method="post" action="{% url 'mass_mail' %}">
+	{% csrf_token %}
+	<div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+		<label><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
+	</div>
+	{% if users %}
+	<div class="grid">
+		{% for user in users %}
+		<div class="card">
+			<div style="display: flex; align-items: center; gap: 8px;">
+				<input type="checkbox" name="recipients" value="{{ user.id }}" class="user-checkbox">
+				<div class="username">{{ user.username }}</div>
+			</div>
+			<div class="email{% if not user.email %} yellow-text{% endif %}">{{ user.email|default:'(нет email)' }}</div>
+			<div class="email{% if not user.plain_password %} yellow-text{% endif %}">
+				{% if user.plain_password %}
+					{{ user.plain_password }}
+				{% else %}
+					(нет пароля)
+				{% endif %}
+			</div>
+			<div class="actions">
+				<a href="{% url 'edit_user' user.id %}" class="btn" style="background: #4CAF50; color: white; text-decoration: none; border-radius: 6px; padding: 8px;">✏️</a>
+				<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn" style="background: #FFD600; color: #333; text-decoration: none; border-radius: 6px; padding: 8px;">📧</a>
+				<a href="{% url 'delete_user' user.id %}" class="btn" style="background: #e53935; color: white; text-decoration: none; border-radius: 6px; padding: 8px;" onclick="return confirm('Удалить пользователя {{ user.username }}?');">🗑️</a>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	{% else %}
+	<div style="text-align:center; color:#888; font-size:1.2em; margin:40px 0;">Ничего не найдено</div>
+	{% endif %}
+</form>
+{% endif %}
+<script>
+// Чекбокс "выбрать всех"
+const selectAll = document.getElementById('select-all');
+const checkboxes = document.querySelectorAll('.user-checkbox');
+selectAll.addEventListener('change', function() {
+	checkboxes.forEach(cb => cb.checked = selectAll.checked);
+});
+checkboxes.forEach(cb => {
+	cb.addEventListener('change', function() {
+		if (!cb.checked) selectAll.checked = false;
+		else if ([...checkboxes].every(c => c.checked)) selectAll.checked = true;
+	});
+});
+// ...
+</script>
+{% endblock %}

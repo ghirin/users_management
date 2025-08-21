@@ -4,7 +4,8 @@
   <form method="post">
     {% csrf_token %}
     {{ form.subject.label_tag }}<br>{{ form.subject }}<br><br>
-    {{ form.message.label_tag }}<br>{{ form.message }}<br><br>
+    {{ form.message.label_tag }}<br>
+    <textarea name="message" id="id_message" class="form-control" style="width:100%; min-width:100%; max-width:100%; min-height:200px;" required>{{ form.message.value|default_if_none:'' }}</textarea><br><br>
     <div>
       <label><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
     </div>
@@ -15,6 +16,15 @@
     </div>
     <br>
     <button type="submit" class="btn btn-primary">Отправить</button>
+    <script>
+      // Автоматически выделять чекбокс пользователя, если user_id передан
+      const url = new URL(window.location.href);
+      const userId = url.searchParams.get('user_id');
+      if (userId) {
+        const cb = document.querySelector(`#recipients-list input[type='checkbox'][value='${userId}']`);
+        if (cb) cb.checked = true;
+      }
+    </script>
   </form>
   <script>
     const selectAll = document.getElementById('select-all');

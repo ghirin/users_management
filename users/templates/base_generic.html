@@ -16,22 +16,34 @@
             {% endfor %}
         </div>
     {% endif %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">Управление пользователями</a>  <!-- Используйте 'home' -->
-            <div class="navbar-nav">
+            <a class="navbar-brand text-white" href="{% url 'home' %}">Управление пользователями</a>  <!-- Используйте 'home' -->
+            <div class="navbar-nav" style="align-items: center;">
                 {% if user.is_authenticated %}
-                <div style="margin-bottom: 10px; float: left;">
-                    <!-- Поле поиска -->
-                    <form method="GET" action="{% url 'user_list' %}">
-                        <button type="submit" class="btn btn-success">Искать</button>
-                        <input type="text" name="q" value="{{ query }}" placeholder="Поиск по пользователям" />
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <form method="GET" action="{% url 'user_list' %}" style="display: flex; gap: 6px; align-items: center; margin-bottom: 0;">
+                        <input type="text" name="q" value="{{ query }}" placeholder="Поиск по пользователям" class="form-control form-control-sm" style="max-width: 180px;" />
+                        <button type="submit" class="btn btn-light btn-sm">Искать</button>
                     </form>
+                    {% if request.resolver_match.url_name == 'user_list' or request.resolver_match.url_name == 'home' %}
+                    <div style="display: flex; gap: 6px; margin-left: 10px;">
+                        <a href="{% url 'user_list' %}?view=tiles{% if query %}&q={{ query }}{% endif %}" class="btn btn-outline-light btn-sm{% if view_type == 'tiles' or not view_type %} active{% endif %}">Плитки</a>
+                        <a href="{% url 'user_list' %}?view=table{% if query %}&q={{ query }}{% endif %}" class="btn btn-outline-light btn-sm{% if view_type == 'table' %} active{% endif %}">Таблица</a>
+                    </div>
+                    {% endif %}
+                    {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'import_users' %}" class="btn btn-info btn-sm ms-2">Импорт</a>
+                    <a href="{% url 'export_users' %}" class="btn btn-warning btn-sm ms-1">Экспорт</a>
+                    {% endif %}
                 </div>
                     <a class="nav-link" href="{% url 'admin:login' %}">Администрирование</a>
                     <a class="nav-link" href="{% url 'profile' user.id %}">Профиль</a>
                     <a class="nav-link" href="{% url 'password_change' %}">Изменение пароля</a>
-                    <a class="nav-link" href="{% url 'logout' %}">Выход</a>
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn btn-link" style="padding:0; color:inherit;">Выход</button>
+                    </form>
 
                 {% else %}
                     <table>
