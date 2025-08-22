@@ -14,7 +14,7 @@
       <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=email&order={% if sort_by == 'email' and order == 'asc' %}desc{% else %}asc{% endif %}">Электронная почта</a>
       </th>
-      <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Телефон</th>
+  <th style="border: 1px solid #ddd; padding: 8px; text-align: center; min-width: 160px;">Телефон</th>
       <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=locality__name&order={% if sort_by == 'locality__name' and order == 'asc' %}desc{% else %}asc{% endif %}">Населённый пункт</a>
       </th>
@@ -24,7 +24,7 @@
       <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
         <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=plain_password&order={% if sort_by == 'plain_password' and order == 'asc' %}desc{% else %}asc{% endif %}">Пароль</a>
       </th>
-  <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+  <th style="border: 1px solid #ddd; padding: 8px; text-align: center; min-width: 150px;">
     <a href="?view=table{% if query %}&q={{ query }}{% endif %}&sort_by=password_expiration_date&order={% if sort_by == 'password_expiration_date' and order == 'asc' %}desc{% else %}asc{% endif %}">Дата истечения пароля</a>
     </th>
     <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Действия</th>

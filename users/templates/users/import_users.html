@@ -13,6 +13,8 @@
             <li><b>plain_password</b> — пароль (открытый текст, может быть пустым)</li>
             <li><b>comment</b> — комментарий (может быть пустым)</li>
             <li><b>password_expiration_date</b> — дата истечения пароля (в формате ГГГГ-ММ-ДД)</li>
+            <li><b>preferred_messenger</b> — предпочитаемый мессенджер (Telegram, WhatsApp, Viber, Signal, VK, Другое)</li>
+            <li><b>locality</b> — населённый пункт (по названию, если не существует — создаётся)</li>
         </ul>
         <a href="{% url 'export_users' %}" class="btn btn-outline-success btn-sm mt-2">Экспортировать пользователей</a>
     </div>

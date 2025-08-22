@@ -22,10 +22,13 @@
             <div class="navbar-nav" style="align-items: center;">
                 {% if user.is_authenticated %}
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <form method="GET" action="{% url 'user_list' %}" style="display: flex; gap: 6px; align-items: center; margin-bottom: 0;">
-                        <input type="text" name="q" value="{{ query }}" placeholder="Поиск по пользователям" class="form-control form-control-sm" style="max-width: 180px;" />
-                        <button type="submit" class="btn btn-light btn-sm">Искать</button>
-                    </form>
+                                        <form method="GET" action="{% url 'home' %}" style="display: flex; gap: 6px; align-items: center; margin-bottom: 0;">
+                                                <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Поиск по логину, email, телефону, комментарию..." class="form-control form-control-sm" style="max-width: 220px;" />
+                                                <button type="submit" class="btn btn-light btn-sm">🔍</button>
+                                                {% if query %}
+                                                    <a href="{% url 'home' %}" class="btn btn-outline-light btn-sm">Сбросить</a>
+                                                {% endif %}
+                                        </form>
                     {% if request.resolver_match.url_name == 'user_list' or request.resolver_match.url_name == 'home' %}
                     <div style="display: flex; gap: 6px; margin-left: 10px;">
                         <a href="{% url 'user_list' %}?view=tiles{% if query %}&q={{ query }}{% endif %}" class="btn btn-outline-light btn-sm{% if view_type == 'tiles' or not view_type %} active{% endif %}">Плитки</a>

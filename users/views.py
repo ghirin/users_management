@@ -113,11 +113,16 @@ def user_list(request):
             CustomUser.objects.filter(id__in=user_ids).update(locality_id=locality_id)
     if query:
         from django.db.models import Q
+        q_lower = query.lower()
         users = users.filter(
             Q(username__icontains=query) |
+            Q(username__icontains=q_lower) |
             Q(email__icontains=query) |
+            Q(email__icontains=q_lower) |
             Q(phone__icontains=query) |
-            Q(comment__icontains=query)
+            Q(phone__icontains=q_lower) |
+            Q(comment__icontains=query) |
+            Q(comment__icontains=q_lower)
         )
     sort_by = request.GET.get('sort_by', 'username')
     order = request.GET.get('order', 'asc')
@@ -185,14 +190,25 @@ def delete_file(request, file_id):
 def home(request):
     sort_by = request.GET.get('sort_by', 'username')
     order = request.GET.get('order', 'asc')
+    query = request.GET.get('q', '')
+    users = User.objects.all()
+    if query:
+        from django.db.models import Q
+        users = users.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(phone__icontains=query) |
+            Q(comment__icontains=query)
+        )
     if order == 'asc':
-        users = User.objects.all().order_by(sort_by)
+        users = users.order_by(sort_by)
     else:
-        users = User.objects.all().order_by(f'-{sort_by}')
+        users = users.order_by(f'-{sort_by}')
     context = {
         'users': users,
         'sort_by': sort_by,
         'order': order,
+        'query': query,
     }
     return render(request, 'home.html', context)
 
@@ -225,6 +241,12 @@ def import_users(request):
                         phone = f"(0{raw_phone[:2]}){raw_phone[2:5]}-{raw_phone[5:7]}-{raw_phone[7:]}"
                     elif raw_phone.isdigit() and len(raw_phone) == 10:
                         phone = f"({raw_phone[:3]}){raw_phone[3:6]}-{raw_phone[6:8]}-{raw_phone[8:]}"
+                    # Импорт locality по названию
+                    locality_name = row.get('locality', '').strip()
+                    locality_obj = None
+                    if locality_name:
+                        from users.models import Locality
+                        locality_obj, _ = Locality.objects.get_or_create(name=locality_name)
                     CustomUser.objects.create(
                         username=row['username'],
                         email=row.get('email', ''),
@@ -233,6 +255,7 @@ def import_users(request):
                         comment=row.get('comment', ''),
                         password_expiration_date=date_str,
                         preferred_messenger=row.get('preferred_messenger', ''),
+                        locality=locality_obj,
                     )
                 else:
                     messages.warning(request, f'Пользователь с именем {row["username"]} уже существует.')
