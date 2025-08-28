@@ -1,4 +1,42 @@
 
+from pathlib import Path
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Логирование событий с ограничением размера файла 64 КБ
+import logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'event_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(BASE_DIR / 'events.log'),
+            'maxBytes': 64000,
+            'backupCount': 1,
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
+    'loggers': {
+        'events': {
+            'handlers': ['event_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
 import os
 from dotenv import load_dotenv
 

@@ -1,0 +1,6 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+  <h1>Просмотр событий (events.log)</h1>
+  <pre style="background:#222;color:#eee;padding:1em;max-height:600px;overflow:auto;font-size:13px;">{{ log_content|default:"Лог пуст" }}</pre>
+  <a href="../">&larr; Назад</a>
+{% endblock %}
