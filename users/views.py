@@ -204,11 +204,25 @@ def home(request):
         users = users.order_by(sort_by)
     else:
         users = users.order_by(f'-{sort_by}')
+
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    page = request.GET.get('page', 1)
+    paginator = Paginator(users, 20)  # 20 пользователей на страницу
+    try:
+        users_page = paginator.page(page)
+    except PageNotAnInteger:
+        users_page = paginator.page(1)
+    except EmptyPage:
+        users_page = paginator.page(paginator.num_pages)
+
     context = {
-        'users': users,
+        'users': users_page,
         'sort_by': sort_by,
         'order': order,
         'query': query,
+        'paginator': paginator,
+        'page_obj': users_page,
+        'is_paginated': users_page.has_other_pages(),
     }
     return render(request, 'home.html', context)
 
