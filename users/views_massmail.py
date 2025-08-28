@@ -10,11 +10,12 @@ from .forms_massmail import MassMailForm
 
 def mass_mail(request):
     if request.method == 'POST':
-        form = MassMailForm(request.POST)
+        form = MassMailForm(request.POST, request.FILES)
         if form.is_valid():
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
             recipient_ids = form.cleaned_data.get('recipients', [])
+            file = form.cleaned_data.get('file')
             if recipient_ids:
                 users = CustomUser.objects.filter(id__in=recipient_ids).exclude(email='')
             else:
@@ -23,8 +24,13 @@ def mass_mail(request):
             if not emails:
                 messages.error(request, 'Нет выбранных пользователей с email для рассылки.')
             else:
-                datatuple = [(subject, message, None, [email]) for email in emails]
-                send_mass_mail(datatuple, fail_silently=False)
+                from django.core.mail import EmailMessage
+                for email in emails:
+                    mail = EmailMessage(subject, message, to=[email])
+                    if file:
+                        mail.attach(file.name, file.read(), file.content_type)
+                    mail.content_subtype = "html"
+                    mail.send()
                 messages.success(request, f'Письма отправлены {len(emails)} пользователям.')
             return redirect('home')
     else:

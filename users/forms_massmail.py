@@ -3,9 +3,13 @@ from django import forms
 
 from .models import CustomUser
 
+
+from tinymce.widgets import TinyMCE
+
 class MassMailForm(forms.Form):
     subject = forms.CharField(label='Тема', max_length=255)
-    message = forms.CharField(label='Текст письма', widget=forms.Textarea)
+    message = forms.CharField(label='Текст письма', widget=TinyMCE(attrs={'cols': 80, 'rows': 10}))
+    file = forms.FileField(label='Вложение', required=False)
     recipients = forms.MultipleChoiceField(
         label='Кому отправить',
         required=False,

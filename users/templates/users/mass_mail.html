@@ -10,7 +10,7 @@
           <h4 class="mb-0">Рассылка по email</h4>
         </div>
         <div class="card-body">
-          <form method="post">
+          <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="mb-3">
               <label for="id_subject" class="form-label">{{ form.subject.label }}</label>
@@ -20,6 +20,22 @@
               <label for="id_message" class="form-label">{{ form.message.label }}</label>
               {{ form.message|add_class:"form-control" }}
             </div>
+            <div class="mb-3">
+              <label for="id_file" class="form-label">{{ form.file.label }}</label>
+              {{ form.file|add_class:"form-control" }}
+            </div>
+{% load static %}
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    selector: 'textarea',
+    language: 'ru',
+    plugins: 'lists link image table code',
+    toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image | code',
+    menubar: false,
+    height: 300
+  });
+</script>
             <div class="mb-3">
               <label class="form-label"><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
             </div>
