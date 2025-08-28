@@ -54,7 +54,17 @@ def edit_user(request, user_id):
             if plain_password:
                 updated_user.plain_password = plain_password
                 updated_user.set_password(plain_password)
+            # Не сохранять файл в user.file
+            updated_user.file = None
             updated_user.save()
+            # Если был загружен файл, зашифровать и сохранить в UserFile
+            uploaded_file = form.cleaned_data.get('file')
+            if uploaded_file:
+                from .zip_utils import encrypt_file_to_zip
+                from django.core.files.base import ContentFile
+                zip_bytes = encrypt_file_to_zip(uploaded_file.read(), uploaded_file.name)
+                zip_filename = uploaded_file.name + '.zip'
+                UserFile.objects.create(user=user, file=ContentFile(zip_bytes, name=zip_filename))
             messages.success(request, "Пользователь успешно обновлен.")
             return redirect('profile', user_id=user.pk)
     else:
