@@ -35,6 +35,18 @@
 	@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
 </style>
 <!-- Список пользователей с чекбоксами (плитки) -->
+<form method="get" style="margin-bottom: 16px;">
+	<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+		<select name="locality_id" class="form-select form-select-sm" style="width: 180px; display:inline-block;" onchange="this.form.submit()">
+			<option value="">— Фильтр по населенному пункту —</option>
+			{% for loc in localities %}
+				<option value="{{ loc.id }}" {% if request.GET.locality_id == loc.id|stringformat:'s' %}selected{% endif %}>{{ loc.name }}</option>
+			{% endfor %}
+		</select>
+		{% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+		{% if view_type %}<input type="hidden" name="view" value="{{ view_type }}">{% endif %}
+	</div>
+</form>
 <form id="user-list-form" method="post" action="">
 	{% csrf_token %}
 	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">

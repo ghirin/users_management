@@ -134,6 +134,13 @@ def user_list(request):
             Q(comment__icontains=query) |
             Q(comment__icontains=q_lower)
         )
+
+    if 'locality_id' in request.GET:
+        locality_id = request.GET.get('locality_id')
+        if locality_id == '':
+            users = users.none()
+        else:
+            users = users.filter(locality_id=locality_id)
     sort_by = request.GET.get('sort_by', 'username')
     order = request.GET.get('order', 'asc')
     allowed_sort_fields = ['username', 'email', 'comment', 'plain_password', 'password_expiration_date', 'locality__name']

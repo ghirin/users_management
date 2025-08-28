@@ -1,0 +1,17 @@
+/* Сворачиваем фильтры в админке */
+.filter-wrapper, .filter, .filter .module {
+    max-height: 2.2em;
+    overflow: hidden;
+    transition: max-height 0.3s;
+    cursor: pointer;
+}
+.filter-wrapper.expanded, .filter.expanded, .filter .module.expanded {
+    max-height: 100em;
+    overflow: visible;
+}
+.filter-title:after {
+    content: ' ▼';
+}
+.filter.expanded .filter-title:after {
+    content: ' ▲';
+}

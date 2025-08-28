@@ -17,26 +17,50 @@ class UserFileInline(admin.TabularInline):
 
 # Вернуть админ-настройки в CustomUserAdmin
 class CustomUserAdmin(admin.ModelAdmin):
-    form = CustomUserChangeForm
-    list_display = ('username', 'email', 'locality', 'password', 'password_expiration_date', 'comment', 'is_active')
-    search_fields = ['username', 'email']
-    list_filter = ['is_active']
-    inlines = [UserFileInline]
-    fieldsets = (
-        (None, {'fields': ('username', 'email', 'password')}),
-        ('Profile', {'fields': ('comment', 'password_expiration_date')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+
+    list_display = (
+        'username', 'email', 'phone', 'locality', 'plain_password_display', 'password_expiration_date',
+        'preferred_messenger', 'is_active', 'is_staff', 'is_superuser',
+        'last_login', 'date_joined'
     )
-    change_list_template = "admin/users/customuser/change_list.html"
+
+    @admin.display(description='Пароль (открытый текст)')
+    def plain_password_display(self, obj):
+        return obj.plain_password or ''
+    list_filter = (
+        'locality', 'is_active', 'is_staff', 'is_superuser',
+        'preferred_messenger', 'password_expiration_date'
+    )
+    class Media:
+        css = {
+            'all': ('admin/css/filters_collapse.css',)
+        }
+        js = ('admin/js/filters_collapse.js',)
+
+    # Удалены кастомные list_display, search_fields, list_filter и open_password для полной стандартизации
+    # Удалены кастомные fieldsets и inlines для полной стандартизации формы
 
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path('import-users/', self.admin_site.admin_view(self.import_users_view), name='import-users'),
             path('export-users/', self.admin_site.admin_view(self.export_users_view), name='export-users'),
+            path('view-events-log/', self.admin_site.admin_view(self.view_events_log), name='view-events-log'),
         ]
         return custom_urls + urls
+
+    def view_events_log(self, request):
+        import os
+        from django.conf import settings
+        log_path = os.path.join(settings.BASE_DIR, 'events.log')
+        try:
+            with open(log_path, encoding='utf-8') as f:
+                log_content = f.read()
+        except Exception:
+            log_content = ''
+        context = dict(self.admin_site.each_context(request))
+        context['log_content'] = log_content
+        return TemplateResponse(request, "admin/users/customuser/view_events_log.html", context)
 
     def import_users_view(self, request):
         if request.method == 'POST' and request.FILES.get('xlsx_file'):
