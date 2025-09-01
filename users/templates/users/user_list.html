@@ -97,6 +97,11 @@
 				{% endif %}
 			</div>
 			<div class="actions d-flex justify-content-center align-items-center" style="gap:4px; font-size:0.95em; flex-wrap: wrap; margin-top: 6px;">
+				<a href="{% url 'profile' user.id %}" class="btn btn-outline-success btn-sm px-2 py-1 d-flex justify-content-center align-items-center" title="Профиль" onclick="event.stopPropagation();" style="min-width:32px;">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-person-fill" viewBox="0 0 16 16">
+						<path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+					</svg>
+				</a>
 				<a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm px-2 py-1" title="Редактировать" onclick="event.stopPropagation();" style="min-width:32px;">✏️</a>
 				<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-outline-warning btn-sm px-2 py-1" title="Почта" onclick="event.stopPropagation();" style="min-width:32px;">📧</a>
 				<a href="{% url 'delete_user' user.id %}" class="btn btn-outline-danger btn-sm px-2 py-1" title="Удалить" onclick="event.stopPropagation(); return confirm('Удалить пользователя {{ user.username }}?');" style="min-width:32px;">🗑️</a>
