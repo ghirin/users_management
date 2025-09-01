@@ -38,6 +38,7 @@
                     {% if user.is_superuser or user.is_staff %}
                     <a href="{% url 'import_users' %}" class="btn btn-info btn-sm ms-2">Импорт</a>
                     <a href="{% url 'export_users' %}" class="btn btn-warning btn-sm ms-1">Экспорт</a>
+                       <a href="{% url 'mass_mail' %}" class="btn btn-warning btn-sm ms-1">Отправить почту</a>
                     {% endif %}
                 </div>
                     <a class="nav-link" href="{% url 'admin:login' %}">Администрирование</a>

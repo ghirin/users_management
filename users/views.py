@@ -224,6 +224,14 @@ def home(request):
     order = request.GET.get('order', 'asc')
     query = request.GET.get('q', '')
     users = User.objects.all()
+    from users.models import Locality
+    localities = Locality.objects.all().order_by('name')
+    locality_id = request.GET.get('locality_id', '')
+    if request.method == 'POST' and request.POST.get('locality_id'):
+        locality_id_post = request.POST.get('locality_id')
+        user_ids = request.POST.getlist('recipients')
+        if locality_id_post and user_ids:
+            User.objects.filter(id__in=user_ids).update(locality_id=locality_id_post)
     if query:
         from django.db.models import Q
         users = users.filter(
@@ -232,6 +240,8 @@ def home(request):
             Q(phone__icontains=query) |
             Q(comment__icontains=query)
         )
+    if locality_id:
+        users = users.filter(locality_id=locality_id)
     if order == 'asc':
         users = users.order_by(sort_by)
     else:
@@ -252,6 +262,8 @@ def home(request):
         'sort_by': sort_by,
         'order': order,
         'query': query,
+        'localities': localities,
+        'locality_id': locality_id,
         'paginator': paginator,
         'page_obj': users_page,
         'is_paginated': users_page.has_other_pages(),

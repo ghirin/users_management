@@ -2,118 +2,200 @@
 {% block content %}
 {% load static %}
 {% if request.GET.view == 'table' %}
-		<div class="container-fluid mt-4">
-			<h2 class="text-center mb-4">Список пользователей</h2>
-			<div class="mb-3 text-end">
-				<a href="{% url 'mass_mail' %}" class="btn btn-warning">Отправить почту</a>
+	<div class="container-fluid mt-4" style="background: #fff; border-radius: 12px; padding: 16px;">
+		<h2 class="text-center mb-4" style="color: #000000;">Список пользователей</h2>
+	<!-- Кнопки импорт/экспорт/отправить почту должны быть в верхнем меню, не в таблице -->
+		<form method="get" style="margin-bottom: 16px;">
+			<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+				<select name="locality_id" class="form-select form-select-sm" style="width: 180px; display:inline-block;" onchange="this.form.submit()">
+					<option value="">— Фильтр по населенному пункту —</option>
+					{% for loc in localities %}
+						<option value="{{ loc.id }}" {% if request.GET.locality_id == loc.id|stringformat:'s' %}selected{% endif %}>{{ loc.name }}</option>
+					{% endfor %}
+				</select>
+				{% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+				{% if view_type %}<input type="hidden" name="view" value="{{ view_type }}">{% endif %}
 			</div>
-			<div class="card p-4" style="border-radius: 12px;">
-				{% include 'users/_user_table.html' %}
-			</div>
-		</div>
-{% else %}
-<style>
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 20px;
-	}
-	.card {
-		background-color: #A5D6A7;
-		border-radius: 10px;
-		padding: 20px;
-		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-		transition: transform 0.2s ease;
-	}
-	.card:hover { transform: scale(1.02); }
-	.username { font-size: 1.2em; font-weight: bold; color: #1B5E20; }
-	.email { font-size: 0.95em; color: #2E7D32; margin-bottom: 10px; }
-	.yellow-text { color: #FFD600 !important; font-weight: bold; }
-	.actions { display: flex; gap: 10px; margin-top: 10px; }
-	.actions a { flex: 1; background-color: #4CAF50; color: white; border: none; padding: 8px; border-radius: 6px; text-decoration: none; transition: background-color 0.2s ease; }
-	.actions a:hover { background-color: #388E3C; }
-	@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-</style>
-<!-- Список пользователей с чекбоксами (плитки) -->
-<form method="get" style="margin-bottom: 16px;">
-	<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-		<select name="locality_id" class="form-select form-select-sm" style="width: 180px; display:inline-block;" onchange="this.form.submit()">
-			<option value="">— Фильтр по населенному пункту —</option>
-			{% for loc in localities %}
-				<option value="{{ loc.id }}" {% if request.GET.locality_id == loc.id|stringformat:'s' %}selected{% endif %}>{{ loc.name }}</option>
-			{% endfor %}
-		</select>
-		{% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
-		{% if view_type %}<input type="hidden" name="view" value="{{ view_type }}">{% endif %}
+		</form>
+		{% if is_paginated %}
+		<nav aria-label="Пагинация" class="mb-2">
+			<ul class="pagination justify-content-center">
+				{% if page_obj.has_previous %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+				{% endif %}
+				{% for num in paginator.page_range %}
+					{% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+						{% if page_obj.number == num %}
+							<li class="page-item active"><span class="page-link">{{ num }}</span></li>
+						{% else %}
+							<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+				{% if page_obj.has_next %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.next_page_number }}">&raquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+				{% endif %}
+			</ul>
+		</nav>
+		{% endif %}
+	{% include 'users/_user_table.html' %}
+		{% if is_paginated %}
+		<nav aria-label="Пагинация" class="mt-2">
+			<ul class="pagination justify-content-center">
+				{% if page_obj.has_previous %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+				{% endif %}
+				{% for num in paginator.page_range %}
+					{% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+						{% if page_obj.number == num %}
+							<li class="page-item active"><span class="page-link">{{ num }}</span></li>
+						{% else %}
+							<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+				{% if page_obj.has_next %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.next_page_number }}">&raquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+				{% endif %}
+			</ul>
+		</nav>
+		{% endif %}
 	</div>
-</form>
-<form id="user-list-form" method="post" action="">
-	{% csrf_token %}
-	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-		<label style="color: #fff;"><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
-		<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 0;">
-			<select name="locality_id" class="form-select form-select-sm" style="width: 180px;">
-				<option value="">— Переместить в населённый пункт —</option>
+{% else %}
+	<style>
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			gap: 20px;
+		}
+		.card {
+			background-color: #A5D6A7;
+			border-radius: 10px;
+			padding: 20px;
+			box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+			transition: transform 0.2s ease;
+		}
+		.card:hover { transform: scale(1.02); }
+		.username { font-size: 1.2em; font-weight: bold; color: #1B5E20; }
+		.email { font-size: 0.95em; color: #2E7D32; margin-bottom: 10px; }
+		.yellow-text { color: #FFD600 !important; font-weight: bold; }
+		.actions { display: flex; gap: 10px; margin-top: 10px; }
+		.actions a { flex: 1; background-color: #4CAF50; color: white; border: none; padding: 8px; border-radius: 6px; text-decoration: none; transition: background-color 0.2s ease; }
+		.actions a:hover { background-color: #388E3C; }
+		@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+	</style>
+	<form method="get" style="margin-bottom: 16px;">
+		<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+			<select name="locality_id" class="form-select form-select-sm" style="width: 180px; display:inline-block;" onchange="this.form.submit()">
+				<option value="">— Фильтр по населенному пункту —</option>
 				{% for loc in localities %}
-					<option value="{{ loc.id }}">{{ loc.name }}</option>
+					<option value="{{ loc.id }}" {% if request.GET.locality_id == loc.id|stringformat:'s' %}selected{% endif %}>{{ loc.name }}</option>
 				{% endfor %}
 			</select>
-			<button type="submit" class="btn btn-success btn-sm">Переместить</button>
+			{% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+			{% if view_type %}<input type="hidden" name="view" value="{{ view_type }}">{% endif %}
 		</div>
-	</div>
-	{% if request.GET.locality_id %}
-	<div class="mb-3">
-	<a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}{% endif %}" class="btn btn-outline-primary btn-sm mb-2" style="background:#fff; color:#111; font-weight:bold; border-color:#fff;">Показать всех</a>
-	</div>
-	{% endif %}
-	{% if users %}
-	<div class="grid">
-		{% for user in users %}
-		<div class="card" style="text-decoration: none; color: inherit; position: relative;">
-			<div style="display: flex; align-items: center; gap: 8px;">
-				<input type="checkbox" name="recipients" value="{{ user.id }}" class="user-checkbox" onclick="event.stopPropagation();">
-				<div class="username">{{ user.username }}</div>
-			</div>
-			<div class="email{% if not user.email %} yellow-text{% endif %}">{{ user.email|default:'(нет email)' }}</div>
-			<div class="email" style="color:#388E3C; font-size:0.95em; margin-bottom:2px;">
-				{% if user.phone %}
-					📞 {{ user.phone }}
-				{% else %}
-					(нет телефона)
-				{% endif %}
-			</div>
-			<div class="email" style="color:#1976d2; font-size:0.95em;">
-				{% if user.locality %}
-					🏙️ <a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}locality_id={{ user.locality.id }}" style="color:#1976d2; text-decoration:underline;">{{ user.locality.name }}</a>
-				{% else %}
-					—
-				{% endif %}
-			</div>
-			<div class="email{% if not user.plain_password %} yellow-text{% endif %}">
-				{% if user.plain_password %}
-					{{ user.plain_password }}
-				{% else %}
-					(нет пароля)
-				{% endif %}
-			</div>
-			<div class="actions d-flex justify-content-center align-items-center" style="gap:4px; font-size:0.95em; flex-wrap: wrap; margin-top: 6px;">
-				<a href="{% url 'profile' user.id %}" class="btn btn-outline-success btn-sm px-2 py-1 d-flex justify-content-center align-items-center" title="Профиль" onclick="event.stopPropagation();" style="min-width:32px;">
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-person-fill" viewBox="0 0 16 16">
-						<path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-					</svg>
-				</a>
-				<a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm px-2 py-1" title="Редактировать" onclick="event.stopPropagation();" style="min-width:32px;">✏️</a>
-				<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-outline-warning btn-sm px-2 py-1" title="Почта" onclick="event.stopPropagation();" style="min-width:32px;">📧</a>
-				<a href="{% url 'delete_user' user.id %}" class="btn btn-outline-danger btn-sm px-2 py-1" title="Удалить" onclick="event.stopPropagation(); return confirm('Удалить пользователя {{ user.username }}?');" style="min-width:32px;">🗑️</a>
+	</form>
+	<form id="user-list-form" method="post" action="">
+		{% csrf_token %}
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+			<label style="color: #fff;"><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
+			<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 0;">
+				<select name="locality_id" class="form-select form-select-sm" style="width: 180px;">
+					<option value="">— Переместить в населённый пункт —</option>
+					{% for loc in localities %}
+						<option value="{{ loc.id }}">{{ loc.name }}</option>
+					{% endfor %}
+				</select>
+				<button type="submit" class="btn btn-success btn-sm">Переместить</button>
 			</div>
 		</div>
-		{% endfor %}
-	</div>
-	{% else %}
-	<div style="text-align:center; color:#888; font-size:1.2em; margin:40px 0;">Ничего не найдено</div>
-	{% endif %}
-</form>
-{% endif %}
+		{% if request.GET.locality_id %}
+		<div class="mb-3">
+			<a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}{% endif %}" class="btn btn-outline-primary btn-sm mb-2" style="background:#fff; color:#111; font-weight:bold; border-color:#fff;">Показать всех</a>
+		</div>
+		{% endif %}
+		{% if users %}
+		<div class="grid">
+			{% for user in users %}
+			<div class="card" style="text-decoration: none; color: inherit; position: relative;">
+				<div style="display: flex; align-items: center; gap: 8px;">
+					<input type="checkbox" name="recipients" value="{{ user.id }}" class="user-checkbox" onclick="event.stopPropagation();">
+					<div class="username">{{ user.username }}</div>
+				</div>
+				<div class="email{% if not user.email %} yellow-text{% endif %}">{{ user.email|default:'(нет email)' }}</div>
+				<div class="email" style="color:#388E3C; font-size:0.95em; margin-bottom:2px;">
+					{% if user.phone %}
+						📞 {{ user.phone }}
+					{% else %}
+						(нет телефона)
+					{% endif %}
+				</div>
+				<div class="email" style="color:#1976d2; font-size:0.95em;">
+					{% if user.locality %}
+						🏙️ <a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}locality_id={{ user.locality.id }}" style="color:#1976d2; text-decoration:underline;">{{ user.locality.name }}</a>
+					{% else %}
+						—
+					{% endif %}
+				</div>
+				<div class="email{% if not user.plain_password %} yellow-text{% endif %}">
+					{% if user.plain_password %}
+						{{ user.plain_password }}
+					{% else %}
+						(нет пароля)
+					{% endif %}
+				</div>
+				<div class="actions d-flex justify-content-center align-items-center" style="gap:4px; font-size:0.95em; flex-wrap: wrap; margin-top: 6px;">
+					<a href="{% url 'profile' user.id %}" class="btn btn-outline-success btn-sm px-2 py-1 d-flex justify-content-center align-items-center" title="Профиль" onclick="event.stopPropagation();" style="min-width:32px;">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-person-fill" viewBox="0 0 16 16">
+							<path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+						</svg>
+					</a>
+					<a href="{% url 'edit_user' user.id %}" class="btn btn-outline-success btn-sm px-2 py-1" title="Редактировать" onclick="event.stopPropagation();" style="min-width:32px;">✏️</a>
+					<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-outline-warning btn-sm px-2 py-1" title="Почта" onclick="event.stopPropagation();" style="min-width:32px;">📧</a>
+					<a href="{% url 'delete_user' user.id %}" class="btn btn-outline-danger btn-sm px-2 py-1" title="Удалить" onclick="event.stopPropagation(); return confirm('Удалить пользователя {{ user.username }}?');" style="min-width:32px;">🗑️</a>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		{% if is_paginated %}
+		<nav aria-label="Пагинация" class="mb-2">
+			<ul class="pagination justify-content-center">
+				{% if page_obj.has_previous %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+				{% endif %}
+				{% for num in paginator.page_range %}
+					{% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+						{% if page_obj.number == num %}
+							<li class="page-item active"><span class="page-link">{{ num }}</span></li>
+						{% else %}
+							<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+				{% if page_obj.has_next %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.next_page_number }}">&raquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+				{% endif %}
+			</ul>
+		</nav>
+		{% endif %}
+		{% else %}
+		<div style="text-align:center; color:#888; font-size:1.2em; margin:40px 0;">Ничего не найдено</div>
+		{% endif %}
+	</form>
+<!-- Removed duplicate grid/cards block after main {% endif %} to fix template error -->
 <script>
 // Чекбокс "выбрать всех"
 const selectAll = document.getElementById('select-all');

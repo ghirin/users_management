@@ -26,10 +26,23 @@
             <form method="post" enctype="multipart/form-data" class="mt-4">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <input type="file" name="file" class="form-control">
+                    <input type="file" name="file" class="form-control" id="user-file-input">
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Загрузка</button>
+                <button type="button" class="btn btn-primary w-100" id="upload-btn">Загрузка</button>
+                <button type="submit" class="d-none" id="real-upload-submit"></button>
                 <a href="/" class="btn btn-secondary w-100 mt-2">Назад</a>
+<script>
+// При клике на кнопку "Загрузка" открываем диалог выбора файла
+document.getElementById('upload-btn').addEventListener('click', function() {
+    document.getElementById('user-file-input').click();
+});
+// После выбора файла автоматически отправляем форму
+document.getElementById('user-file-input').addEventListener('change', function() {
+    if (this.files.length > 0) {
+        document.getElementById('real-upload-submit').click();
+    }
+});
+</script>
             </form>
 
             <div class="mt-4">
