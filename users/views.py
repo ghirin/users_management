@@ -151,13 +151,28 @@ def user_list(request):
     else:
         users = users.order_by(sort_by)
     localities = Locality.objects.all().order_by('name')
+
+    # --- PAGINATION ---
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    page = request.GET.get('page', 1)
+    paginator = Paginator(users, 20)  # 20 пользователей на страницу
+    try:
+        users_page = paginator.page(page)
+    except PageNotAnInteger:
+        users_page = paginator.page(1)
+    except EmptyPage:
+        users_page = paginator.page(paginator.num_pages)
+
     context = {
-        'users': users,
+        'users': users_page,
         'query': query,
         'view_type': view_type,
         'sort_by': sort_by,
         'order': order,
         'localities': localities,
+        'paginator': paginator,
+        'page_obj': users_page,
+        'is_paginated': users_page.has_other_pages(),
     }
     return render(request, 'users/user_list.html', context)
 

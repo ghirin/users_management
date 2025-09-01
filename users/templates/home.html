@@ -8,7 +8,7 @@
     <div class="mb-3 text-end">
       <a href="{% url 'mass_mail' %}" class="btn btn-warning">Отправить почту</a>
     </div>
-    <div class="card p-4" style="border-radius: 12px; background: rgba(255,255,255,0.95);">
+  <div class="card p-4" style="border-radius: 12px; background: rgba(255,255,255,0.95); width: calc(100vw - 20px); max-width: calc(100vw - 20px); margin: 0 auto;">
       {% include 'users/_user_table.html' %}
       {% if is_paginated %}
       <nav aria-label="Пагинация" class="mt-3">

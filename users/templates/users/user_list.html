@@ -75,6 +75,13 @@
 				<div class="username">{{ user.username }}</div>
 			</div>
 			<div class="email{% if not user.email %} yellow-text{% endif %}">{{ user.email|default:'(нет email)' }}</div>
+			<div class="email" style="color:#388E3C; font-size:0.95em; margin-bottom:2px;">
+				{% if user.phone %}
+					📞 {{ user.phone }}
+				{% else %}
+					(нет телефона)
+				{% endif %}
+			</div>
 			<div class="email" style="color:#1976d2; font-size:0.95em;">
 				{% if user.locality %}
 					🏙️ <a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}locality_id={{ user.locality.id }}" style="color:#1976d2; text-decoration:underline;">{{ user.locality.name }}</a>

@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                 <div style="display: flex; align-items: center; gap: 12px;">
                                         <form method="GET" action="{% url 'home' %}" style="display: flex; gap: 6px; align-items: center; margin-bottom: 0;">
-                                                <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Поиск по логину, email, телефону, комментарию..." class="form-control form-control-sm" style="max-width: 220px;" />
+                                                <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Регистрозависимый поиск по логину, email, телефону, комментарию..." class="form-control form-control-sm" style="max-width: 220px;" />
                                                 <button type="submit" class="btn btn-light btn-sm">🔍</button>
                                                 {% if query %}
                                                     <a href="{% url 'home' %}" class="btn btn-outline-light btn-sm">Сбросить</a>
