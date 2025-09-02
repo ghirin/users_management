@@ -26,7 +26,7 @@
 					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
 				{% endif %}
 				{% for num in paginator.page_range %}
-					{% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+					{% if num >= page_obj.number|add:'-4' and num <= page_obj.number|add:'4' %}
 						{% if page_obj.number == num %}
 							<li class="page-item active"><span class="page-link">{{ num }}</span></li>
 						{% else %}
@@ -52,7 +52,7 @@
 					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
 				{% endif %}
 				{% for num in paginator.page_range %}
-					{% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+					{% if num >= page_obj.number|add:'-4' and num <= page_obj.number|add:'4' %}
 						{% if page_obj.number == num %}
 							<li class="page-item active"><span class="page-link">{{ num }}</span></li>
 						{% else %}
@@ -123,6 +123,31 @@
 			<a href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}{% endif %}" class="btn btn-outline-primary btn-sm mb-2" style="background:#fff; color:#111; font-weight:bold; border-color:#fff;">Показать всех</a>
 		</div>
 		{% endif %}
+		{% if is_paginated %}
+		<nav aria-label="Пагинация" class="mb-2">
+			<ul class="pagination justify-content-center">
+				{% if page_obj.has_previous %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+				{% endif %}
+				{% for num in paginator.page_range %}
+					{% if num >= page_obj.number|add:'-4' and num <= page_obj.number|add:'4' %}
+						{% if page_obj.number == num %}
+							<li class="page-item active"><span class="page-link">{{ num }}</span></li>
+						{% else %}
+							<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+				{% if page_obj.has_next %}
+					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.next_page_number }}">&raquo;</a></li>
+				{% else %}
+					<li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+				{% endif %}
+			</ul>
+		</nav>
+		{% endif %}
 		{% if users %}
 		<div class="grid">
 			{% for user in users %}
@@ -131,7 +156,13 @@
 					<input type="checkbox" name="recipients" value="{{ user.id }}" class="user-checkbox" onclick="event.stopPropagation();">
 					<div class="username">{{ user.username }}</div>
 				</div>
-				<div class="email{% if not user.email %} yellow-text{% endif %}">{{ user.email|default:'(нет email)' }}</div>
+								<div class="email{% if not user.email %} yellow-text{% endif %}">
+									{% if user.email %}
+										<a href="{% url 'mass_mail' %}?user_id={{ user.id }}" style="color:inherit; text-decoration:underline;" title="Отправить почту пользователю">{{ user.email }}</a>
+									{% else %}
+										(нет email)
+									{% endif %}
+								</div>
 				<div class="email" style="color:#388E3C; font-size:0.95em; margin-bottom:2px;">
 					{% if user.phone %}
 						📞 {{ user.phone }}
@@ -175,7 +206,7 @@
 					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
 				{% endif %}
 				{% for num in paginator.page_range %}
-					{% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+					{% if num >= page_obj.number|add:'-4' and num <= page_obj.number|add:'4' %}
 						{% if page_obj.number == num %}
 							<li class="page-item active"><span class="page-link">{{ num }}</span></li>
 						{% else %}

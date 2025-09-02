@@ -50,6 +50,7 @@
             <td class="{% if not user.plain_password %}text-warning-empty{% endif %}">{{ user.plain_password|default:'—' }}</td>
             <td>{{ user.password_expiration_date }}</td>
             <td class="d-flex gap-1">
+              <a href="{% url 'profile' user.id %}" class="btn btn-outline-success btn-sm" title="Профиль"><span style="font-size:1.2em;">👤</span></a>
               <a href="{% url 'mass_mail' %}?user_id={{ user.id }}" class="btn btn-outline-warning btn-sm" title="Отправить почту"><span style="font-size:1.2em;">📧</span></a>
               <a href="{% url 'user_profile' user.id %}" class="btn btn-outline-primary btn-sm" title="Файлы"><span style="font-size:1.2em;">📁</span></a>
               <a href="{% url 'delete_user' user.id %}" class="btn btn-outline-danger btn-sm" title="Удалить" onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?');"><span style="font-size:1.2em;">🗑️</span></a>
