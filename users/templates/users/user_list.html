@@ -1,10 +1,9 @@
 {% extends 'base_generic.html' %}
 {% block content %}
 {% load static %}
-{% if request.GET.view == 'table' %}
-	<div class="container-fluid mt-4" style="background: #fff; border-radius: 12px; padding: 16px;">
+{% if view_type == 'table' %}
+	<div class="container-fluid mt-4" style="background: #fff; border-radius: 12px; padding: 16px; max-width: 100vw; width: 100%; overflow-x: auto;">
 		<h2 class="text-center mb-4" style="color: #000000;">Список пользователей</h2>
-	<!-- Кнопки импорт/экспорт/отправить почту должны быть в верхнем меню, не в таблице -->
 		<form method="get" style="margin-bottom: 16px;">
 			<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
 				<select name="locality_id" class="form-select form-select-sm" style="width: 180px; display:inline-block;" onchange="this.form.submit()">
@@ -24,6 +23,10 @@
 					<li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
 				{% else %}
 					<li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+
+
+
+
 				{% endif %}
 				{% for num in paginator.page_range %}
 					{% if num >= page_obj.number|add:'-4' and num <= page_obj.number|add:'4' %}
@@ -70,6 +73,8 @@
 		{% endif %}
 	</div>
 {% else %}
+	<div class="container-fluid mt-4" style="max-width: 98vw; width: 1400px;">
+		<h2 class="text-center mb-4" style="color: #fff;">Список пользователей</h2>
 	<style>
 		.grid {
 			display: grid;
@@ -196,7 +201,7 @@
 				</div>
 			</div>
 			{% endfor %}
-		</div>
+		</div><br>
 		{% if is_paginated %}
 		<nav aria-label="Пагинация" class="mb-2">
 			<ul class="pagination justify-content-center">
@@ -226,7 +231,7 @@
 		<div style="text-align:center; color:#888; font-size:1.2em; margin:40px 0;">Ничего не найдено</div>
 		{% endif %}
 	</form>
-<!-- Removed duplicate grid/cards block after main {% endif %} to fix template error -->
+
 <script>
 // Чекбокс "выбрать всех"
 const selectAll = document.getElementById('select-all');
@@ -242,4 +247,7 @@ checkboxes.forEach(cb => {
 });
 // ...
 </script>
+
+{% endif %}
 {% endblock %}
+

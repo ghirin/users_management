@@ -41,7 +41,7 @@
                        <a href="{% url 'mass_mail' %}" class="btn btn-warning btn-sm ms-1">Отправить почту</a>
                     {% endif %}
                 </div>
-                    <a class="nav-link" href="{% url 'admin:login' %}">Администрирование</a>
+                    <a href="{% url 'admin:login' %}" class="btn btn-primary btn-sm ms-2" style="color: #fff;">Администрирование</a>
                     <a class="nav-link" href="{% url 'profile' user.id %}">Профиль</a>
                     <a class="nav-link" href="{% url 'password_change' %}">Изменение пароля</a>
                     <form method="post" action="{% url 'logout' %}" style="display:inline;">
