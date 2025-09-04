@@ -1,69 +1,74 @@
 {% extends 'base_generic.html' %}
 {% load static %}
 {% block content %}
-<div class="container-fluid mt-4" style="min-height: 80vh; position: relative;">
-  <div style="position: absolute; inset: 0; z-index: 0; background: url('{% static 'Background.jpg' %}') center center/cover no-repeat; opacity: 0.25; border-radius: 18px;"></div>
-  <div style="position: relative; z-index: 1;">
-    <h2 class="text-center mb-4" style="color: #000000;">Список пользователей</h2>
-    <form method="get" style="margin-bottom: 16px;">
-      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-        <select name="locality_id" class="form-select form-select-sm" style="width: 180px; display:inline-block;" onchange="this.form.submit()">
-          <option value="">— Фильтр по населенному пункту —</option>
-          {% for loc in localities %}
-            <option value="{{ loc.id }}" {% if locality_id == loc.id|stringformat:'s' %}selected{% endif %}>{{ loc.name }}</option>
-          {% endfor %}
-        </select>
-        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
-      </div>
-    </form>
-    <form id="user-list-form" method="post" action="">
-      {% csrf_token %}
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-  <label style="color: #fff;"><input type="checkbox" id="select-all"> <b>Выбрать всех</b></label>
-        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 0;">
-          <select name="locality_id" class="form-select form-select-sm" style="width: 180px;">
-            <option value="">— Переместить в населённый пункт —</option>
-            {% for loc in localities %}
-              <option value="{{ loc.id }}">{{ loc.name }}</option>
-            {% endfor %}
-          </select>
-          <button type="submit" class="btn btn-success btn-sm">Переместить</button>
-        </div>
-      </div>
-      {% if locality_id %}
-      <div class="mb-3">
-        <a href="?{% if query %}q={{ query }}&{% endif %}" class="btn btn-outline-primary btn-sm mb-2" style="background:#fff; color:#111; font-weight:bold; border-color:#fff;">Показать всех</a>
-      </div>
+{% if view_type == 'table' or not view_type %}
+<div class="container-fluid mt-4" style="background: #fff; border-radius: 12px; padding: 16px; max-width: 1920px; width: 100%; min-width: 1200px; margin: 0 auto;">
+  <h2 class="text-center mb-4" style="color: #000000;">Список пользователей</h2>
+  <form method="get" style="margin-bottom: 16px;">
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      <select name="locality_id" class="form-select form-select-sm" style="width: 180px; display:inline-block;" onchange="this.form.submit()">
+        <option value="">— Фильтр по населенному пункту —</option>
+        {% for loc in localities %}
+          <option value="{{ loc.id }}" {% if request.GET.locality_id == loc.id|stringformat:'s' %}selected{% endif %}>{{ loc.name }}</option>
+        {% endfor %}
+      </select>
+      {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+      {% if view_type %}<input type="hidden" name="view" value="{{ view_type }}">{% endif %}
+    </div>
+  </form>
+  {% if is_paginated %}
+  <nav aria-label="Пагинация" class="mb-2">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
       {% endif %}
-      <div class="card p-4" style="border-radius: 12px; background: rgba(255,255,255,0.95); width: calc(100vw - 20px); max-width: calc(100vw - 20px); margin: 0 auto;">
-        {% include 'users/_user_table.html' %}
-        {% if is_paginated %}
-        <nav aria-label="Пагинация" class="mt-3">
-          <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-              <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if sort_by %}sort_by={{ sort_by }}&{% endif %}{% if order %}order={{ order }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-            {% else %}
-              <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
-            {% endif %}
-            {% for num in paginator.page_range %}
-              {% if page_obj.number == num %}
-                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if sort_by %}sort_by={{ sort_by }}&{% endif %}{% if order %}order={{ order }}&{% endif %}page={{ num }}">{{ num }}</a></li>
-              {% endif %}
-            {% endfor %}
-            {% if page_obj.has_next %}
-              <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if sort_by %}sort_by={{ sort_by }}&{% endif %}{% if order %}order={{ order }}&{% endif %}page={{ page_obj.next_page_number }}">&raquo;</a></li>
-            {% else %}
-              <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-            {% endif %}
-          </ul>
-        </nav>
+      {% for num in paginator.page_range %}
+        {% if num >= page_obj.number|add:'-4' and num <= page_obj.number|add:'4' %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+          {% endif %}
         {% endif %}
-      </div>
-    </form>
-  </div>
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+  {% include 'users/_user_table.html' %}
+  {% if is_paginated %}
+  <nav aria-label="Пагинация" class="mt-2">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+      {% endif %}
+      {% for num in paginator.page_range %}
+        {% if num >= page_obj.number|add:'-4' and num <= page_obj.number|add:'4' %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if view_type %}view={{ view_type }}&{% endif %}{% if locality_id %}locality_id={{ locality_id }}&{% endif %}page={{ page_obj.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
 </div>
+{% endif %}
 <style>
   .text-warning-empty {
     color: #ffc107 !important;
